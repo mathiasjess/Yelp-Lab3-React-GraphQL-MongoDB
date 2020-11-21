@@ -1,2 +1,2 @@
-# Yelp-Lab1-react-node-mysql
+# Yelp-Lab3-react-node-garphqk-mongodb
  Prototype of yelp application using react node and mysql
