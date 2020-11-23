@@ -11,10 +11,20 @@ require('./mongoose');
 const mongoose = require('mongoose')
 
 
+const { graphqlHTTP } = require('express-graphql');
+const schema = require('./schema/schema')
+
+
 const server = require("http").createServer(app);
 const io = require('socket.io')(server)
 const Chat = require('./models/ChatModel')
 const PORT = process.env.PORT || 3001
+
+
+app.use('/graphql', graphqlHTTP({
+    schema,
+    graphiql : true
+}));
 
 
 //use cors to allow cross origin resource sharing
@@ -85,42 +95,43 @@ io.on("connection", socket => {
 
 // Fetching Routes of restaurant
 
-var registerrestaurant = require('./routes/restaurant/restaurantRegistration')
-var restaurantloginroute = require('./routes/restaurant/restaurantLogin')
-let restaurantprofiledetailsroute = require('./routes/restaurant/restaurantProfile')
-var restaurantmenuroute = require('./routes/restaurant/restaurantMenu')
-var restauranteventsroute = require('./routes/restaurant/restaurantEvents')
-var restaurantordersroute = require('./routes/restaurant/restaurantOrders')
-var restaurantreviewsroute = require('./routes/restaurant/restaurantReviews')
-var chatroutes = require('./routes/restaurant/ChatsRoute')
+var registerrestaurant = require('./routes/restaurant/restaurantRegistration');
+const { GraphQLSchema } = require('graphql');
+// var restaurantloginroute = require('./routes/restaurant/restaurantLogin')
+// let restaurantprofiledetailsroute = require('./routes/restaurant/restaurantProfile')
+// var restaurantmenuroute = require('./routes/restaurant/restaurantMenu')
+// var restauranteventsroute = require('./routes/restaurant/restaurantEvents')
+// var restaurantordersroute = require('./routes/restaurant/restaurantOrders')
+// var restaurantreviewsroute = require('./routes/restaurant/restaurantReviews')
+// var chatroutes = require('./routes/restaurant/ChatsRoute')
 
 app.use('/registerrestaurant', registerrestaurant);
-app.use('/restaurantloginroute', restaurantloginroute);
-app.use('/restaurantprofiledetailsroute', restaurantprofiledetailsroute);
-app.use('/restaurantmenuroute', restaurantmenuroute)
-app.use('/restauranteventsroute', restauranteventsroute)
-app.use('/restaurantordersroute', restaurantordersroute)
-app.use('/restaurantreviewsroute', restaurantreviewsroute)
-app.use('/chatroutes', chatroutes)
+// app.use('/restaurantloginroute', restaurantloginroute);
+// app.use('/restaurantprofiledetailsroute', restaurantprofiledetailsroute);
+// app.use('/restaurantmenuroute', restaurantmenuroute)
+// app.use('/restauranteventsroute', restauranteventsroute)
+// app.use('/restaurantordersroute', restaurantordersroute)
+// app.use('/restaurantreviewsroute', restaurantreviewsroute)
+// app.use('/chatroutes', chatroutes)
 
-// Customer Routes
-var customerregistrationroute = require('./routes/customer/customerRegistration');
-var customerloginroute = require('./routes/customer/customerLogin')
-var customerprofileroute = require('./routes/customer/customerProfile')
-var customersearchroute = require('./routes/customer/searchRestaurant')
-var customerreviewroute = require('./routes/customer/customerReview')
-var customereventsroute = require('./routes/customer/events')
-var customerordersroute = require('./routes/customer/customerOrders')
-var allcustomersroute = require('./routes/customer/friends')
+// // Customer Routes
+// var customerregistrationroute = require('./routes/customer/customerRegistration');
+// var customerloginroute = require('./routes/customer/customerLogin')
+// var customerprofileroute = require('./routes/customer/customerProfile')
+// var customersearchroute = require('./routes/customer/searchRestaurant')
+// var customerreviewroute = require('./routes/customer/customerReview')
+// var customereventsroute = require('./routes/customer/events')
+// var customerordersroute = require('./routes/customer/customerOrders')
+// var allcustomersroute = require('./routes/customer/friends')
 
-app.use('/customerregistrationroute', customerregistrationroute)
-app.use('/customerloginroute', customerloginroute)
-app.use('/customerprofileroute', customerprofileroute)
-app.use('/customersearchroute', customersearchroute)
-app.use('/customerreviewroute', customerreviewroute)
-app.use('/customereventsroute', customereventsroute)
-app.use('/customerordersroute', customerordersroute)
-app.use('/allcustomersroute', allcustomersroute)
+// app.use('/customerregistrationroute', customerregistrationroute)
+// app.use('/customerloginroute', customerloginroute)
+// app.use('/customerprofileroute', customerprofileroute)
+// app.use('/customersearchroute', customersearchroute)
+// app.use('/customerreviewroute', customerreviewroute)
+// app.use('/customereventsroute', customereventsroute)
+// app.use('/customerordersroute', customerordersroute)
+// app.use('/allcustomersroute', allcustomersroute)
 
 server.listen(PORT);
 console.log("Server Listening on port 3001");
