@@ -116,6 +116,7 @@ const reviewsType = new GraphQLObjectType({
 const ordersType = new GraphQLObjectType({
     name : "orders",
     fields : () =>({
+        _id : { type: GraphQLString },
         customerID: { type: GraphQLString },
         customerName: { type: GraphQLString },
         customerImage: { type: GraphQLString },
@@ -142,4 +143,4 @@ const orderDetailsType = new GraphQLObjectType({
     })
 })
 
-module.exports = restaurantOwnerType
+module.exports = { restaurantOwnerType, ordersType}

@@ -23,7 +23,6 @@ const restaurantLogin = async (args) => {
         else {
             loginresult = result[0]
             console.log(loginresult.password)
-            savedLogin = { status: 200, message: "Logged In" }
             bcrypt.compare(password, loginresult.password, (err, result) => {
                 console.log("Password result", result)
                 if (result === true) {
