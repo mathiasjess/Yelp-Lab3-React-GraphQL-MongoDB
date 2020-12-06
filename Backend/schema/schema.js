@@ -65,15 +65,16 @@ const RootQuery = new GraphQLObjectType({
             }
         },
         restaurantDetails: {
-            type: new GraphQLList(customerType),
+            type: new GraphQLList(restaurantOwnerType),
             args: { _id: { type: GraphQLString } },
             resolve(parent, args) {
+                console.log("Id", args._id)
                 return restaurant.find({ _id: args._id }, (err, result) => {
                     if (err) {
                         throw err
                     }
                     else {
-                        console.log("Restaurant Result")
+                        console.log("Restaurant Result", result)
                         return result
                     }
                 })
@@ -181,6 +182,11 @@ const Mutation = new GraphQLObjectType({
                 curbPickup: { type: GraphQLBoolean },
                 dineIn: { type: GraphQLBoolean },
                 yelpDelivery: { type: GraphQLBoolean },
+                location: { type: GraphQLString },
+                city: { type: GraphQLString },
+                state: { type: GraphQLString },
+                country: { type: GraphQLString },
+                zipcode: { type: GraphQLString },
             },
             async resolve(parent, args) {
                 return await updateRestaurantProfile(args)

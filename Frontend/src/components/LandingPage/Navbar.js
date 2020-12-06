@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import Home from '../Home/Home';
 import '../../App.css';
 import yelp_logo from '../../images/yelp_icon.png'
-import { connect } from 'react-redux';
-import { restaurantProfileLogout } from '../../actions/restaurantAction'
-import { customerProfileLogout } from '../../actions/customerAction'
+// import { connect } from 'react-redux';
+// import { restaurantProfileLogout } from '../../actions/restaurantAction'
+// import { customerProfileLogout } from '../../actions/customerAction'
 //create the Navbar Component
 class Navbar extends Component {
     constructor(props) {
@@ -20,42 +20,42 @@ class Navbar extends Component {
     }
     //handle logout to destroy the cookie
     handleRestaurantLogout = () => {
-        localStorage.removeItem('id')
-        localStorage.removeItem('email')
-        localStorage.removeItem('role')
-        localStorage.removeItem('token')
-        const data = {
-            restaurantId: '',
-            restaurantName: '',
-            email: '',
-            password: '',
-            description: '',
-            contact: '',
-            location: '',
-            city: '',
-            state: '',
-            country: '',
-            zipcode: '',
-            restaurantImage: '',
-            timings: '',
-            curbPickup: false,
-            dineIn: false,
-            yelpDelivery: false
-        }
-        this.props.restaurantProfileLogout(data)
-        this.setState({
-            customeractionsFlag: false
-        })
+        // localStorage.removeItem('id')
+        // localStorage.removeItem('email')
+        // localStorage.removeItem('role')
+        // localStorage.removeItem('token')
+        // const data = {
+        //     restaurantId: '',
+        //     restaurantName: '',
+        //     email: '',
+        //     password: '',
+        //     description: '',
+        //     contact: '',
+        //     location: '',
+        //     city: '',
+        //     state: '',
+        //     country: '',
+        //     zipcode: '',
+        //     restaurantImage: '',
+        //     timings: '',
+        //     curbPickup: false,
+        //     dineIn: false,
+        //     yelpDelivery: false
+        // }
+        // this.props.restaurantProfileLogout(data)
+        // this.setState({
+        //     customeractionsFlag: false
+        // })
     }
     handleCustomerLogout=()=>{
-        localStorage.removeItem('id')
-        localStorage.removeItem('email')
-        localStorage.removeItem('role')
-        localStorage.removeItem('token')
-        this.props.customerProfileLogout()
-        this.setState({
-            customeractionsFlag: false
-        })
+        // localStorage.removeItem('id')
+        // localStorage.removeItem('email')
+        // localStorage.removeItem('role')
+        // localStorage.removeItem('token')
+        // this.props.customerProfileLogout()
+        // this.setState({
+        //     customeractionsFlag: false
+        // })
 
     }
     handleHome() {
@@ -137,10 +137,11 @@ class Navbar extends Component {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        restaurantProfileLogout: (data) => dispatch(restaurantProfileLogout(data)),
-        customerProfileLogout :() => dispatch(customerProfileLogout()),
-    }
-}
-export default connect(null, mapDispatchToProps)(Navbar);
+// function mapDispatchToProps(dispatch) {
+//     return {
+//         restaurantProfileLogout: (data) => dispatch(restaurantProfileLogout(data)),
+//         customerProfileLogout :() => dispatch(customerProfileLogout()),
+//     }
+// }
+// export default connect(null, mapDispatchToProps)(Navbar);
+export default Navbar;

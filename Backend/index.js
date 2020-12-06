@@ -21,11 +21,6 @@ const Chat = require('./models/ChatModel')
 const PORT = process.env.PORT || 3001
 
 
-app.use('/graphql', graphqlHTTP({
-    schema,
-    graphiql : true
-}));
-
 
 //use cors to allow cross origin resource sharing
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
@@ -70,32 +65,37 @@ var options = {
     bufferMaxEntries: 0
 }
 
+app.use('/graphql', graphqlHTTP({
+    schema,
+    graphiql : true
+}));
+
 // Sending and recieving messages using socket.io
 
-io.on("connection", socket => {
-    socket.on("Input Chat Message", msg => {
-        let chat = new Chat({
-            customerId: msg.customerId,
-            sender: msg.sender,
-            restaurantId: msg.restaurantId,
-            chatMessage: msg.chatMessage,
-            nowtime: msg.nowtime,
-            sendertype : msg.sendertype
-        })
-        console.log("Chat details", chat)
-        chat.save((err, doc) => {
-            if (err) return res.json({ success: false })
-            Chat.find({ "_id": doc._id }, (err,result)=>{
-                if(err) return res.json({message: "Error"})
-                return io.emit("Output Chat Message", result)
-            })
-        })
-    })
-})
+// io.on("connection", socket => {
+//     socket.on("Input Chat Message", msg => {
+//         let chat = new Chat({
+//             customerId: msg.customerId,
+//             sender: msg.sender,
+//             restaurantId: msg.restaurantId,
+//             chatMessage: msg.chatMessage,
+//             nowtime: msg.nowtime,
+//             sendertype : msg.sendertype
+//         })
+//         console.log("Chat details", chat)
+//         chat.save((err, doc) => {
+//             if (err) return res.json({ success: false })
+//             Chat.find({ "_id": doc._id }, (err,result)=>{
+//                 if(err) return res.json({message: "Error"})
+//                 return io.emit("Output Chat Message", result)
+//             })
+//         })
+//     })
+// })
 
 // Fetching Routes of restaurant
 
-var registerrestaurant = require('./routes/restaurant/restaurantRegistration');
+// var registerrestaurant = require('./routes/restaurant/restaurantRegistration');
 const { GraphQLSchema } = require('graphql');
 // var restaurantloginroute = require('./routes/restaurant/restaurantLogin')
 // let restaurantprofiledetailsroute = require('./routes/restaurant/restaurantProfile')
@@ -105,7 +105,7 @@ const { GraphQLSchema } = require('graphql');
 // var restaurantreviewsroute = require('./routes/restaurant/restaurantReviews')
 // var chatroutes = require('./routes/restaurant/ChatsRoute')
 
-app.use('/registerrestaurant', registerrestaurant);
+// app.use('/registerrestaurant', registerrestaurant);
 // app.use('/restaurantloginroute', restaurantloginroute);
 // app.use('/restaurantprofiledetailsroute', restaurantprofiledetailsroute);
 // app.use('/restaurantmenuroute', restaurantmenuroute)

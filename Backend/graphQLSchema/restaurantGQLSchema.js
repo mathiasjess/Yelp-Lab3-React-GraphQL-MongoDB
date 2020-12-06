@@ -65,6 +65,7 @@ const restaurantOwnerType = new GraphQLObjectType({
 const menuType = new GraphQLObjectType({
     name: "menuItem",
     fields: () => ({
+        _id : {type : GraphQLString},
         dishCategory: { type: GraphQLString },
         dishName: { type: GraphQLString },
         dishDescription: { type: GraphQLString },
@@ -76,6 +77,7 @@ const menuType = new GraphQLObjectType({
 const eventsType = new GraphQLObjectType({
     name: "events",
     fields: () => ({
+        _id : {type : GraphQLString},
         eventName: { type: GraphQLString },
         eventDescription: { type: GraphQLString },
         eventTime: { type: GraphQLString },
@@ -104,6 +106,7 @@ const registeredusersType = new GraphQLObjectType({
 const reviewsType = new GraphQLObjectType({
     name: "reviews",
     fields : () =>({
+        _id : {type : GraphQLString},
         customerID: { type: GraphQLString },
         customerName: { type: GraphQLString },
         customerImage: { type: GraphQLString },

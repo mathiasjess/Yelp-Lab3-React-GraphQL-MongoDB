@@ -8,6 +8,7 @@ const saltRounds = 10;
 
 const restaurantRegister = async (args) => {
     var existingUser = null
+    console.log("From the front end", args)
     await restaurant.find({ email: args.email }, function (err, response) {
         if (response.length >= 1) {
         existingUser =  { status: 401, message: "User already exists. Enter a unique email" }
@@ -61,7 +62,7 @@ const restaurantRegister = async (args) => {
             })
         }
     })
-    console.log("Existing user", existingUser)
+    console.log("Existing user", existingUser.message)
     return existingUser
 }
 

@@ -43,135 +43,16 @@ class Main extends Component {
             <div className="homepage">
                 <div id="site-content">
                     <Route path="/" component={NavBar} />
-                    <Route
+                    {/*<Route
                         path="/register"
                         render={props => <Register {...props} />}
-                    />
-                    <Route
-                        path="/register/customerregister"
-                        render={props => <CustomerRegister {...props} />}
-                    />
-                    <Route
-                        path="/register/restaurantregister"
-                        render={props => <RestaurantRegister {...props} />}
-                    />
-                    <Route
-                        path="/login"
-                        render={props => <Login {...props} />}
-                    />
-                    <Route
-                        path="/login/customerlogin"
-                        render={props => <CustomerLogin {...props} />}
-                    />
-                    <Route
-                        path="/login/restaurantlogin"
-                        render={props => <RestaurantLogin {...props} />}
-                    />
-                    <Route
-                        path="/customerhomepage/:id"
-                        render={props => <CustomerHomePage {...props} />}
-                    />
-                    <Route
-                        path="/restauranthomepage/:id"
-                        render={props => <RestaurantHomePage  {...props} />}
-                    />
-                    <Route
-                        path="/displaymenu"
-                        render={props => <DisplayMenu  {...props} />}
-                    />
-                    <Route
-                        path="/dishdetails/:id"
-                        render={props => <DishDetails  {...props} />}
-                    />
-                    <Route
-                        path="/orders"
-                        render={props => <Orders  {...props} />}
-                    />
-                    <Route
-                        path="/updateorder/:id"
-                        render={props => <UpdateOrder  {...props} />}
-                    />
-                    <Route
-                        path="/displayevents"
-                        render={props => <DisplayEvents  {...props} />}
-                    />
-                    <Route
-                        path="/editevent/:id"
-                        render={props => <EditEvent  {...props} />}
-                    />
-                    <Route
-                        path="/restaurantviewofcustomer"
-                        render={props => <RestaurantViewOfCustomer {...props} />}
-                    />
-                    <Route
-                        path="/eventlist/:id"
-                        render={props => <EventList {...props} />}
-                    />
-                    <Route
-                        path="/viewcustomerreviews"
-                        render={props => <CustomerReviews {...props} />}
-                    />
-                    <Route
-                        path="/updatecustomerprofile"
-                        render={props => <UpdateCustomerProfile  {...props} />}
-                    />
-                    <Route
-                        path="/searchrestaurant"
-                        render={props => <SearchRestaurant  {...props} />}
-                    />
-                    <Route
-                        path="/customerviewofrestaurant/:id"
-                        render={props => <CustomerViewofRestaurant  {...props} />}
-                    />
-                    <Route
-                        path="/writereview/:id"
-                        render={props => <WriteaReview  {...props} />}
-                    />
-                    <Route
-                        path="/customerorder/:id"
-                        render={props => <CustomerOrders  {...props} />}
-                    />
-                    <Route
-                        path="/customerorderdetails/:id"
-                        render={props => <CustomerOrderDetails  {...props} />}
-                    />
-                    <Route
-                        path="/customerorderhistory"
-                        render={props => <CustomerOrderHistory  {...props} />}
-                    />
-                    <Route
-                        path="/mainevents"
-                        render={props => <MainEventsPage  {...props} />}
-                    />
-                    <Route
-                        path="/individualeventdetails/:id"
-                        render={props => <IndividualEventDetails {...props} />}
-                    />
-                    <Route
-                        path="/customerevents/:id"
-                        render={props => <CustomerEvents  {...props} />}
-                    />
-                    <Route
-                        path="/viewindividualdish/:id"
-                        render={props => <IndividualDishDetails  {...props} />}
-                    />
-                    <Route
-                        path="/allusers"
-                        render={props => <AllCustomers  {...props} />}
-                    />
-                    <Route
-                        path="/gotoconversations"
-                        render={props => <ChatHistory {...props} />}
-                    />
-                    <Route
-                        path="/chatpage/:id"
-                        render={props => <ChatPage  {...props} />}
-                    />
-                    <Route
-                    path="/otheruserprofile/:id"
-                    render={props => <OtherUsersProfileDetails  {...props} />}
-                />
+                    />*/}
+                    <Route path="/register" component={Register} />
+                    <Route path="/login" component={Login} />
+                    <Route path="/register/restaurantregister" component={RestaurantRegister} />
                     <Route path="/home" component={Home} />
+                    <Route path="/login/restaurantlogin" component={RestaurantLogin} />
+                    <Route path="/restauranthomepage/:id" component = {RestaurantHomePage} />
                 </div>
             </div>
         )

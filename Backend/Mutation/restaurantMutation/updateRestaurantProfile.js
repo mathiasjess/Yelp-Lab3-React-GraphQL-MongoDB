@@ -10,10 +10,16 @@ const updateRestaurantProfile = async (args) => {
         timings : args.timings,
         curbPickup : args.curbPickup,
         dineIn : args.dineIn,
-        yelpDelivery : args.yelpDelivery
+        yelpDelivery : args.yelpDelivery,
+        location: args.location,
+        city: args.city,
+        state: args.state,
+        country: args.country,
+        zipcode: args.zipcode,
+
     }
     await restaurant.findByIdAndUpdate(args.restaurantId, updateObject, (err, result) => {
-        console.log("result", result);
+        console.log("Updated restaurant result", result);
         if (err) {
             savedProfile = { status: 401, message: "Something went wrong. Please try again" }
         }

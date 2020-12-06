@@ -121,7 +121,7 @@ class RestaurantHomePage extends React.Component {
                 </div>
 
                 <div class="split right">
-                    {this.state.homePageFlag && <RestaurantProfile />}
+                    {this.state.homePageFlag && <RestaurantProfile restaurantId = {localStorage.getItem('id')} />}
                     {this.state.updateProfileFlag && <UpdateRestaurantProfile />}
                     {this.state.addMenuFlag && <Menu />}
                     {this.state.ordersFlag && <Orders />}

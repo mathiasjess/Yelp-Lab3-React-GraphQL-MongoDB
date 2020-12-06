@@ -1,10 +1,10 @@
 import React from 'react';
-import axios from 'axios';
-import { rooturl } from '../../../config/settings';
+import {restaurantRegistration} from '../../../mutations/restaurantMutations/registerMutation'
+import { graphql } from 'react-apollo';
 
 class restaurantRegister extends React.Component {
-    constructor() {
-        super()
+    constructor(props) {
+        super(props)
         this.state = {
             restaurantname: '',
             email: '',
@@ -29,31 +29,31 @@ class restaurantRegister extends React.Component {
     submitRegister(event) {
         //prevent page from refresh
         event.preventDefault();
-        const restaurantRegistrationData = {
-            restaurantname: this.state.restaurantname,
+        this.props.restaurantRegistration({
+            variables : {
+            restaurantName: this.state.restaurantname,
             email: this.state.email,
             password: this.state.password,
             location: this.state.location,
             city: this.state.city,
             state: this.state.state,
             country: this.state.country,
-            zipcode: this.state.zipcode
-        }
-        console.log(restaurantRegistrationData)
-        //set the with credentials to true
-        axios.defaults.withCredentials = true;
-        //make a post request with the user data
-        axios.post(rooturl+'/registerrestaurant/restaurantregister', restaurantRegistrationData)
-            .then(response => {
-                console.log("Status Code : ", response.status);
-                if (response.status === 200) {
-                    alert("Restaurant Registration successful")
-                    this.props.history.replace('/login/restaurantlogin');
-                }
-            })
-            .catch(error => {
+            zipcode: this.state.zipcode,
+            }
+        }).then(response =>{
+            console.log("Response status", response.data.restaurantRegistration)
+            console.log("Response status", response.data.restaurantRegistration.message)
+            console.log("Response status", response.data.restaurantRegistration.status)
+            if(response.data.restaurantRegistration.status === "200")
+            {
+                alert(response.data.restaurantRegistration.message)
+                this.props.history.replace('/login/restaurantlogin');
+            }
+            else{
                 alert("Could not register")
-            })
+            }
+            
+        })
     }
     render() {
         return (
@@ -86,4 +86,4 @@ class restaurantRegister extends React.Component {
 }
 
 
-export default restaurantRegister;
+export default graphql(restaurantRegistration, {name : "restaurantRegistration"})(restaurantRegister);

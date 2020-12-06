@@ -1,12 +1,11 @@
 import React from 'react';
 import '../RestaurantHomePage.css';
 import '../UpdateRestaurantProfile.css';
-import Cookies from 'js-cookie';
 import { Link, withRouter } from 'react-router-dom';
-import axios from 'axios';
 import { connect } from 'react-redux';
 import {restaurantProfileUpdate} from '../../../actions/restaurantAction'
-import { rooturl } from '../../../config/settings';
+import {updateRestaurant} from '../../../mutations/restaurantMutations/updateRestaurantMutation'
+import { graphql } from 'react-apollo';
 
 
 class UpdateRestaurantProfile extends React.Component {
@@ -54,40 +53,39 @@ class UpdateRestaurantProfile extends React.Component {
     }
     updateRestaurantProfile(event) {
         event.preventDefault();
-        const data = new FormData()
-        data.append('restaurantName', this.state.restaurantName);
-        data.append('email', this.state.email);
-        data.append('description', this.state.description);
-        data.append('contact', this.state.contact);
-        data.append('location', this.state.location);
-        data.append('city', this.state.city);
-        data.append('state', this.state.state);
-        data.append('country', this.state.country);
-        data.append('zipcode', this.state.zipcode);
-        data.append('timings', this.state.timings);
-        data.append('restaurantImage', this.state.restaurantImage);
-        data.append('curbPickup', Number(this.state.delivery.curbPickup));
-        data.append('dineIn', Number(this.state.delivery.dineIn));
-        data.append('yelpDelivery', Number(this.state.delivery.yelpDelivery));
-        axios.defaults.headers.common['authorization'] = localStorage.getItem('token')
-        axios.post(rooturl+`/restaurantprofiledetailsroute/restaurantprofileUpdate/${this.props.user._id}`, data)
-            .then(response => {
-                console.log("After updating",response.data)
-                console.log("After updating",response.data.data.message)
-                if (response.data.data.message === "success") {
-                    this.setState({
-                        restaurantImage: response.data.data.data
-                    })
-                    // console.log('Getting Cookie ID', Cookies.get('id'))
-                    this.updateallprofileData();
-                    alert('Saved Changes to Profile')
-                    this.props.history.push(`/restauranthomepage/${this.props.user._id}`);
-                }
-                else if (response.data.message === "error") {
-                    alert("Something Went wrong. Could not update")
-                    this.props.history.push(`/restauranthomepage/${this.props.user._id}`);
-                }
-            })
+        this.props.updateRestaurant({
+            variables : {
+                restaurantId : localStorage.getItem('id'),
+                restaurantName: this.state.restaurantName,
+                email: this.state.email,
+                description: this.state.description,
+                contact: this.state.contact,
+                location: this.state.location,
+                city: this.state.city,
+                state: this.state.state,
+                country: this.state.country,
+                zipcode: this.state.zipcode,
+                timings: this.state.timings,
+                curbPickup: this.state.delivery.curbPickup,
+                dineIn: this.state.delivery.dineIn,
+                yelpDelivery: this.state.delivery.yelpDelivery
+            }
+        }).then(response =>{
+            console.log("Response status", response.data.updateRestaurant)
+            console.log("Response status", response.data.updateRestaurant.message)
+            console.log("Response status", response.data.updateRestaurant.status)
+            if(response.data.updateRestaurant.status === "200")
+            {   
+                // this.updateRestaurantProfile()
+                alert(response.data.updateRestaurant.message)
+                this.props.history.replace(`/restauranthomepage/${localStorage.getItem("id")}`);
+                // window.location.reload()
+            }
+            else{
+                alert(response.data.updateRestaurant.message)
+            }
+            
+        })
 
     }
     updateallprofileData() {
@@ -101,11 +99,10 @@ class UpdateRestaurantProfile extends React.Component {
             state: this.state.state,
             country: this.state.country,
             zipcode: this.state.zipcode,
-            restaurantImage: this.state.restaurantImage,
             timings: this.state.timings,
-            curbPickup: Number(this.state.delivery.curbPickup),
-            dineIn: Number(this.state.delivery.dineIn),
-            yelpDelivery: Number(this.state.delivery.yelpDelivery),
+            curbPickup: this.state.delivery.curbPickup,
+            dineIn: this.state.delivery.dineIn,
+            yelpDelivery: this.state.delivery.yelpDelivery,
         }
         console.log("After update", data)
         this.props.restaurantProfileUpdate(data)
@@ -113,6 +110,7 @@ class UpdateRestaurantProfile extends React.Component {
     }
 
     render() {
+        console.log("Curb pick up", this.state.curbPickup)
         return (
             <div class="biz-site-expanded-grid-content-column">
                 <h1 class="page-title">Basic Information</h1>
@@ -224,4 +222,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 // export default connect(mapStateToProps)(UpdateRestaurantProfile);
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(UpdateRestaurantProfile));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(graphql(updateRestaurant, {name : "updateRestaurant"})(UpdateRestaurantProfile)));
