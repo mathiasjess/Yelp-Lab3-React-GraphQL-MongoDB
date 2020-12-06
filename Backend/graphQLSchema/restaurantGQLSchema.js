@@ -70,7 +70,7 @@ const menuType = new GraphQLObjectType({
         dishName: { type: GraphQLString },
         dishDescription: { type: GraphQLString },
         dishIngredients: { type: GraphQLString },
-        price: { type: GraphQLFloat }
+        price: { type: GraphQLString }
     })
 })
 

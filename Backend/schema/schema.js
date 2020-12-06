@@ -68,13 +68,13 @@ const RootQuery = new GraphQLObjectType({
             type: new GraphQLList(restaurantOwnerType),
             args: { _id: { type: GraphQLString } },
             resolve(parent, args) {
-                console.log("Id", args._id)
+                console.log(" Restaurant Id inside restaurant details", args._id)
                 return restaurant.find({ _id: args._id }, (err, result) => {
                     if (err) {
                         throw err
                     }
                     else {
-                        console.log("Restaurant Result", result)
+                        // console.log("Restaurant Result", result)
                         return result
                     }
                 })
@@ -199,10 +199,11 @@ const Mutation = new GraphQLObjectType({
                 dishName: { type: GraphQLString },
                 dishIngredients: { type: GraphQLString },
                 dishDescription: { type: GraphQLString },
-                price: { type: GraphQLFloat },
+                price: { type: GraphQLString },
                 dishCategory: { type: GraphQLString },
             },
             async resolve(parent, args) {
+                console.log("Inside Add Dish", args.restaurantId)
                 return await addMenu(args)
             }
         },
@@ -215,6 +216,7 @@ const Mutation = new GraphQLObjectType({
                 password: { type: GraphQLString },
             },
             async resolve(parent, args) {
+                console.log("Inside add dish". args.restaurantId)
                 return await customerRegister(args)
             }
         },

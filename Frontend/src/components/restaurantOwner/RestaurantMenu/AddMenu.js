@@ -1,10 +1,8 @@
 import React from 'react'
 import '../RestaurantHomePage.css'
-import axios from 'axios'
-import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { restaurantDishAdd } from '../../../actions/restaurantAction';
-import { rooturl } from '../../../config/settings';
+import { graphql } from 'react-apollo';
+import {addDish} from '../../../mutations/restaurantMutations/addMenuMutation'
 
 
 class Menu extends React.Component {
@@ -59,45 +57,30 @@ class Menu extends React.Component {
 
     updateMenu(event) {
         event.preventDefault();
-        const data = new FormData()
-        for (var x = 0; x < this.state.dishImages.length; x++) {
-            data.append('file', this.state.dishImages[x])
-        }
-        axios.post(rooturl+'/restaurantmenuroute/uploadpics', data)
-            .then(res => { // then print response status
-                if (res.data.message === "success") {
-                    console.log("Image names", res.data.data)
-                    // this.setState({
-                    //     fetchedImages : res.data.data
-                    // })
-                    let data = {
-                        restaurantId: this.props.user._id,
-                        dishName: this.state.dishName,
-                        dishIngredients: this.state.dishIngredients,
-                        dishDescription: this.state.dishDescription,
-                        dishImages: res.data.data,
-                        price: this.state.price,
-                        dishCategory: this.state.dishCategory
-                    }
-                    console.log(data)
-                    axios.defaults.headers.common['authorization'] = localStorage.getItem('token')
-                    axios.post(rooturl+'/restaurantmenuroute/updateMenu', data)
-                        .then(response => {
-                            // console.log(response.data.data.data.menuItem)
-                            console.log("Response",response.data.data.message)
-                            if (response.data.data.message === "success") {
-                                console.log(response.data.data.data[0].menuItem[0])
-                                alert('Added Dish to Menu')
-                                this.props.restaurantDishAdd(response.data.data.data[0].menuItem[0])
-                                this.props.history.push(`/restauranthomepage/${this.props.user._id}`);
-                            }
-                            else if (response.data.data.message === "error") {
-                                alert("Something Went wrong. Could not add dish. Please try again")
-                                this.props.history.push(`/restauranthomepage/${this.props.user._id}`);
-                            }
-                        })
-                }
-            })
+        this.props.addDish({
+            variables : {
+                restaurantId: localStorage.getItem('id'),
+                dishName: this.state.dishName,
+                dishIngredients: this.state.dishIngredients,
+                dishDescription: this.state.dishDescription,
+                price: this.state.price,
+                dishCategory: this.state.dishCategory
+            }
+        }).then(response =>{
+            console.log("Response status", response.data.addDish)
+            console.log("Response status", response.data.addDish.message)
+            console.log("Response status", response.data.addDish.status)
+            if(response.data.addDish.status === "200")
+            {   
+                alert(response.data.addDish.message)
+                this.props.history.replace(`/restauranthomepage/${localStorage.getItem("id")}`);
+                // window.location.reload()
+            }
+            else{
+                alert(response.data.addDish.message)
+            }
+            
+        })
     }
     render() {
         return (
@@ -107,14 +90,6 @@ class Menu extends React.Component {
                     <div class="biz-info-section">
                         <div class="biz-info-row">
                             <ul>
-                                <li class="BusinessName"><label class="u-nowrap">Dish Images</label></li>
-                                <li><input type="file"
-                                    name="dishImages"
-                                    id='dishImages'
-                                    onChange={this.handleMenuChange}
-                                    class="inputFields" multiple /></li>
-                                {/*<li><button type="submit" class="ybtn ybtn--primary" onClick={this.uploadPics}><span>Upload dish Images</span></button></li>*/}
-
                                 <li class="BusinessName"><label for="cars">Choose a category:</label></li>
                                 <li>
                                     <select value={this.state.dishCategory} onChange={this.handleCategoryChange} >
@@ -161,14 +136,4 @@ class Menu extends React.Component {
 
 }
 
-const mapStateToProps = state => ({
-    user: state.restaurantReducer
-});
-
-function mapDispatchToProps(dispatch) {
-    return {
-        restaurantDishAdd: (data) => dispatch(restaurantDishAdd(data))
-    }
-}
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Menu));
+export default withRouter(graphql(addDish, {name : "addDish"})(Menu));

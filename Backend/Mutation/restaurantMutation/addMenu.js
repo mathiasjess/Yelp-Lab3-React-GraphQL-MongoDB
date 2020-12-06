@@ -9,6 +9,8 @@ const addMenu = async (args) => {
         price: args.price,
         dishCategory: args.dishCategory
     }
+
+    console.log("Add dish object", addDishObject)
     await restaurant.updateOne(
         { _id: args.restaurantId }, { $push:{menuItem: addDishObject}}, (err, result) => {
             if (err) {

@@ -1,17 +1,13 @@
 import React from 'react'
-import axios from 'axios'
-import Popup from "reactjs-popup";
-import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import '../Orders/orderhistory.css'
 import Moment from 'react-moment';
 import default_image from '../../../images/customer_default_pic.png'
-import { restaurantLogin } from '../../../actions/restaurantAction'
-import { customerLogin } from '../../../actions/customerAction'
 import ReactPaginate from 'react-paginate';
 import '../Paginate.css'
-import { rooturl } from '../../../config/settings';
-import { imagepath } from '../../../config/imagepath';
+import { graphql } from 'react-apollo';
+import { restaurantDetails } from '../../../queries/restaurantQueries/restaurantHomePageQueries'
+
 
 class RestaurantOrderHistory extends React.Component {
     constructor(props) {
@@ -23,36 +19,62 @@ class RestaurantOrderHistory extends React.Component {
             handleDeliveredFlag: false,
             originalorderSummary: [],
             originalorderDetails: [],
-            offset: 0,
-            data: [],
-            perPage: 3,
-            currentPage: 0
+            handleFilterFlag : true
         }
         this.handleFilters = this.handleFilters.bind(this)
         this.handleAllOrders = this.handleAllOrders.bind(this)
         this.updateOrder = this.updateOrder.bind(this)
     }
-    async componentDidMount() {
-        axios.defaults.headers.common['authorization'] = localStorage.getItem('token')
-    await axios.get(rooturl+`/restaurantprofiledetailsroute/restaurantprofiledetails/${this.props.user._id}`)
-            .then((response) => {
-                if (response.data.data.message === "success") {
-                    this.props.restaurantLogin(response.data.data.data)
-                    this.setState({
-                        orderSummary: this.props.user.orders,
-                        originalorderSummary: this.props.user.orders
-                    })
-                }
-            })
-            this.receivedData();
+    updateOrderSummary(data){
+        this.setState({
+            orderSummary : data,
+            originalorderSummary : data
+        })
     }
     receivedData() {
-        const slice = this.state.orderSummary.slice(this.state.offset, this.state.offset + this.state.perPage)
-        const postData = slice.map(summary => <React.Fragment>
-            <div>
+        var data = this.props.data;
+        if (data.loading) {
+            return (<div>Loading......</div>)
+        }
+        else {
+            // this.updateOrderSummary(data.restaurantDetails[0].orders)
+            console.log("Orders data", data)
+            return data.restaurantDetails[0].orders.map(summary => {
+                return <div>
+                    <div class="card-order">
+                        <div class="order-header">
+                            <img class="photo-box" src={default_image} alt="Avatar" />
+                            < Link to={{
+                                pathname: '/restaurantviewofcustomer',
+                                aboutProps:
+                                {
+                                    id: summary.customerID,
+                                }
+                            }}>
+                                <h5>{summary.customerName}</h5></Link>
+                        </div>
+                        <div class="order-footer">
+                            <p><b>Date:</b> <Moment>{summary.Date}</Moment></p>
+                            <p><b>Total Price:</b> {summary.totalPrice}</p>
+                        </div>
+                        <div class="order-footer">
+                            <p><b>Delivery Option:</b> {summary.deliveryOption}</p>
+                            <p><b>Status:</b> {summary.delivery_status}</p>
+                            <p><b>Order Type:</b> {summary.deliveryFilter}</p>
+                            <button class="btn btn-primary" onClick={() => this.updateOrder(summary._id, summary)}>Update Order Status</button>
+                        </div>
+                    </div>
+                </div>
+            })
+        }
+    }
+
+    receivedFilteredData(){
+        return this.state.orderSummary.map(summary => {
+            return <div>
                 <div class="card-order">
                     <div class="order-header">
-                        {summary.customerImage ? <img src={imagepath+`${summary.customerImage}`} alt="Avatar" class="photo-box" /> : <img class="photo-box" src={default_image} alt="Avatar" />}
+                        <img class="photo-box" src={default_image} alt="Avatar" />
                         < Link to={{
                             pathname: '/restaurantviewofcustomer',
                             aboutProps:
@@ -70,50 +92,40 @@ class RestaurantOrderHistory extends React.Component {
                         <p><b>Delivery Option:</b> {summary.deliveryOption}</p>
                         <p><b>Status:</b> {summary.delivery_status}</p>
                         <p><b>Order Type:</b> {summary.deliveryFilter}</p>
-                        <button class="btn btn-primary" onClick={() => this.updateOrder(summary._id)}>Update Order Status</button>
+                        <button class="btn btn-primary" onClick={() => this.updateOrder(summary._id, summary)}>Update Order Status</button>
                     </div>
                 </div>
             </div>
-        </React.Fragment>)
-
-        this.setState({
-            pageCount: Math.ceil(this.state.orderSummary.length / this.state.perPage),
-
-            postData
         })
     }
-    handlePageClick = (e) => {
-        const selectedPage = e.selected;
-        const offset = selectedPage * this.state.perPage;
 
-        this.setState({
-            currentPage: selectedPage,
-            offset: offset
-        }, () => {
-            this.receivedData()
-        });
-
-    };
     async handleFilters(deliveryFilter) {
         await this.setState({
-            orderSummary: this.state.originalorderSummary.filter((summary) => {
+            handleFilterFlag: false,
+            orderSummary: this.props.data.restaurantDetails[0].orders.filter((summary) => {
                 return summary.deliveryFilter === deliveryFilter
             })
 
         });
         console.log("Filtered Order Summary", this.state.orderSummary)
-        this.receivedData();
+        this.receivedFilteredData();
     }
 
-    async handleAllOrders() {
+    async handleAllOrders(data) {
         await this.setState({
-            orderSummary: this.state.originalorderSummary
+            handleFilterFlag: true,
+            orderSummary: data
         })
         this.receivedData();
 
     }
-    updateOrder = (orderID) => {
-        this.props.history.push(`/updateorder/${orderID}`)
+    updateOrder = (orderID, data) => {
+        this.props.history.replace({
+            pathname: `/updateorder/${orderID}`,
+            state: {
+                detail: data
+            }
+        });
     }
     render() {
         console.log("orders", this.state.orderSummary)
@@ -133,36 +145,20 @@ class RestaurantOrderHistory extends React.Component {
                     </div>
                     <div class="td-items2">
                         <h2> Orders</h2>
-                        {this.state.postData}
-                        <ReactPaginate
-                            previousLabel={"<<"}
-                            nextLabel={">>"}
-                            breakLabel={"..."}
-                            breakClassName={"break-me"}
-                            pageCount={this.state.pageCount}
-                            marginPagesDisplayed={2}
-                            pageRangeDisplayed={5}
-                            onPageChange={this.handlePageClick}
-                            containerClassName={"pagination"}
-                            subContainerClassName={"pages pagination"}
-                            activeClassName={"active"} />
+                        {this.state.handleFilterFlag ? this.receivedData(): this.receivedFilteredData()}
                     </div>
                 </div>
             </div>
         );
     }
 }
-const mapStateToProps = state => ({
-    user: state.restaurantReducer
-});
 
-function mapDispatchToProps(dispatch) {
-    console.log("Dispatch", dispatch);
-    return {
-        restaurantLogin: (data) => dispatch(restaurantLogin(data)),
-        customerLogin: (data) => dispatch(customerLogin(data))
-
+export default graphql(restaurantDetails, {
+    options: () => {
+        return {
+            variables: {
+                _id: localStorage.getItem('id')
+            }
+        }
     }
-}
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(RestaurantOrderHistory));
+})(RestaurantOrderHistory);

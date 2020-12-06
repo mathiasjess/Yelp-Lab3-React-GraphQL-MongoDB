@@ -47,19 +47,19 @@ class UpdateOrder extends React.Component {
     }
     updateOrderStatus(event) {
         event.preventDefault();
-        console.log("Delivery Filter", this.state.orderSummary.deliveryFilter)
+        console.log("Delivery Filter", this.props.location.state.detail.deliveryFilter)
 
         let deliveryFilter = null;
         if(this.state.optionValue === "Picked Up" || this.state.optionValue === "Delivered"){
             deliveryFilter = "Delivered"
         }
         else{
-            deliveryFilter = this.state.orderSummary.deliveryFilter
+            deliveryFilter = this.props.location.state.detail.deliveryFilter
         }
         console.log("Delivery Filter", deliveryFilter)
 
         const data = {
-            orderID: this.state.orderSummary._id,
+            orderID: this.props.location.state.detail._id,
             delivery_status: this.state.optionValue,
             deliveryFilter : deliveryFilter
         }
@@ -80,7 +80,7 @@ class UpdateOrder extends React.Component {
     cancelOrder(event) {
         event.preventDefault();
         const data = {
-            orderID: this.state.orderSummary._id,
+            orderID: this.props.location.state.detail._id,
             delivery_status: 'Cancelled Order',
             deliveryFilter: 'Cancelled Order'
         }
@@ -98,20 +98,20 @@ class UpdateOrder extends React.Component {
     }
 
     render() {
-        console.log("Details", this.state.orderSummary.orderDetails)
+        console.log("Details", this.props.location.state.detail.orderDetails)
         let status = null;
-        if (this.state.orderSummary.deliveryOption === 'pickup') {
+        if (this.props.location.state.detail.deliveryOption === 'pickup') {
             status = (<select onChange={this.handleCategoryChange} >
-                <option value={this.state.orderSummary.delivery_status}>{this.state.orderSummary.delivery_status}</option>
+                <option value={this.props.location.state.detail.delivery_status}>{this.props.location.state.detail.delivery_status}</option>
                 <option value="Order Recieved">Order Recieved</option>
                 <option value="Preparing">Preparing</option>
                 <option value="Pick Up Ready">Pick Up Ready</option>
                 <option value="Picked Up">Picked Up</option>
             </select>)
         }
-        else if (this.state.orderSummary.deliveryOption === 'delivery') {
+        else if (this.props.location.state.detail.deliveryOption === 'delivery') {
             status = (<select onChange={this.handleCategoryChange} >
-                <option value={this.state.orderSummary.delivery_status}>{this.state.orderSummary.delivery_status}</option>
+                <option value={this.props.location.state.detail.delivery_status}>{this.props.location.state.detail.delivery_status}</option>
                 <option value="Order Recieved">Order Recieved</option>
                 <option value="Preparing">Preparing</option>
                 <option value="On the Way">On the Way</option>
@@ -132,17 +132,17 @@ class UpdateOrder extends React.Component {
                                     pathname: '/restaurantviewofcustomer',
                                     aboutProps:
                                     {
-                                        id: this.state.orderSummary.customerID,
+                                        id: this.props.location.state.detail.customerID,
                                     }
                                 }}>
-                                    <h5>{this.state.orderSummary.firstName} {this.state.orderSummary.lastName}</h5></Link>
+                                    <h5>{this.props.location.state.detail.firstName} {this.props.location.state.detail.lastName}</h5></Link>
                                 <div class="order-footer">
-                                    <p><b>Date: </b><Moment>{this.state.orderSummary.Date}</Moment> </p>
-                                    <p><b>Total Price:</b> ${this.state.orderSummary.totalPrice}</p>
+                                    <p><b>Date: </b><Moment>{this.props.location.state.detail.Date}</Moment> </p>
+                                    <p><b>Total Price:</b> ${this.props.location.state.detail.totalPrice}</p>
                                 </div>
                                 <div>
                                     <h5> Order details</h5>
-                                    {this.state.orderSummary.orderDetails && this.state.orderSummary.orderDetails.map(function (order, j) {
+                                    {this.props.location.state.detail.orderDetails && this.props.location.state.detail.orderDetails.map(function (order, j) {
                                         return (
                                             <div class="order-footer" key={j}>
                                                 <p>{order.dishName}</p>
@@ -153,9 +153,9 @@ class UpdateOrder extends React.Component {
                                     })}
                                 </div>
                                 <div class="order-footer">
-                                    <p><b>Delivery Option: </b>{this.state.orderSummary.deliveryOption}</p>
-                                    <p><b>Status:  </b>{this.state.orderSummary.delivery_status}</p>
-                                    <p><b>Order Type:</b> {this.state.orderSummary.deliveryFilter}</p>
+                                    <p><b>Delivery Option: </b>{this.props.location.state.detail.deliveryOption}</p>
+                                    <p><b>Status:  </b>{this.props.location.state.detail.delivery_status}</p>
+                                    <p><b>Order Type:</b> {this.props.location.state.detail.deliveryFilter}</p>
                                 </div>
                             </div>
                         </div>

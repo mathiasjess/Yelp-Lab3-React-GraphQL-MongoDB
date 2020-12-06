@@ -52,7 +52,7 @@ class UpdateRestaurantProfile extends React.Component {
         })
     }
     updateRestaurantProfile(event) {
-        event.preventDefault();
+        // event.preventDefault();
         this.props.updateRestaurant({
             variables : {
                 restaurantId : localStorage.getItem('id'),
@@ -76,7 +76,7 @@ class UpdateRestaurantProfile extends React.Component {
             console.log("Response status", response.data.updateRestaurant.status)
             if(response.data.updateRestaurant.status === "200")
             {   
-                // this.updateRestaurantProfile()
+                this.updateRestaurantProfile()
                 alert(response.data.updateRestaurant.message)
                 this.props.history.replace(`/restauranthomepage/${localStorage.getItem("id")}`);
                 // window.location.reload()

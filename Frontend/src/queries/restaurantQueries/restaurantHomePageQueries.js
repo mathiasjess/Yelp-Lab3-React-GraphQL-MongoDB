@@ -12,6 +12,14 @@ query($_id : String){
             zipcode
             latitude
             longitude
+            menuItem{
+                _id
+                dishName
+                dishIngredients
+                dishDescription
+                price
+                dishCategory
+            }
             reviews{
                 customerID
                 customerName
@@ -19,6 +27,20 @@ query($_id : String){
                 ratings
                 comments
                 reviewDate
+            }
+            orders{
+                _id
+                customerID
+                customerName
+                totalPrice
+                deliveryOption
+                delivery_status
+                deliveryFilter
+                orderDetails{
+                    dishName
+                    price
+                    quantity
+                }
             }
             contact
             curbPickup

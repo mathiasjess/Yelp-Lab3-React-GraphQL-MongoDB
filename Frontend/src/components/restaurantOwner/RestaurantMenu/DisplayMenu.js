@@ -1,9 +1,8 @@
 import React from 'react'
 import '../RestaurantHomePage.css'
-import { connect } from 'react-redux';
-import ReactPaginate from 'react-paginate';
 import '../Paginate.css'
-import { imagepath } from '../../../config/imagepath';
+import { graphql} from 'react-apollo';
+import { restaurantDetails } from '../../../queries/restaurantQueries/restaurantHomePageQueries'
 
 
 
@@ -16,11 +15,15 @@ class DisplayMenu extends React.Component {
             perPage: 3,
             currentPage: 0
         };
-        this.handlePageClick = this.handlePageClick.bind(this);
         this.viewDish = this.viewDish.bind(this)
     }
-    viewDish(ID) {
-        this.props.history.replace(`/dishdetails/${ID}`);
+    viewDish(ID, menu) {
+        this.props.history.replace({
+            pathname: `/dishdetails/${ID}`,
+            state: {
+                detail: menu
+            }
+        });
     }
 
     componentDidMount() {
@@ -29,68 +32,43 @@ class DisplayMenu extends React.Component {
 
 
     receivedData() {
-        const data = this.props.user.menuItem;
-        const slice = data.slice(this.state.offset, this.state.offset + this.state.perPage)
-        const postData = slice.map(menu => <React.Fragment>
-            <div class="card-menu">
+        var data = this.props.data;
+        if (data.loading) {
+            return (<div>Loading......</div>)
+        }
+        else{
+        console.log("Menu data", data)
+        return data.restaurantDetails[0].menuItem.map(menu => {
+         return <div class="card-menu">
                 <div class="card-items">
                     <h5 style={{ textAlign: 'center', lineHeight: '2rem' }}><b>{menu.dishName}</b></h5>
-                    <img src={imagepath+`${menu.dishImages[0]}`} alt="Avatar" class="card-img-top-menu" />
                     <p style={{ lineHeight: '2rem' }}><b><span class="glyphicon glyphicon-th-list"></span>Category: </b> {menu.dishCategory}</p>
                     <p><b>Description: </b>{menu.dishDescription}</p>
                     <p><b>{menu.price}</b></p>
                 </div>
-                <button class="btn btn-primary" value={menu._id} onClick={() => this.viewDish(menu._id)}>View Details</button>
-            </div>
-        </React.Fragment>)
-
-        this.setState({
-            pageCount: Math.ceil(data.length / this.state.perPage),
-
-            postData
-        })
+                <button class="btn btn-primary" value={menu._id} onClick={() => this.viewDish(menu._id, menu)}>View Details</button>
+            </div>})
+        }
     }
-    handlePageClick = (e) => {
-        const selectedPage = e.selected;
-        const offset = selectedPage * this.state.perPage;
-
-        this.setState({
-            currentPage: selectedPage,
-            offset: offset
-        }, () => {
-            this.receivedData()
-        });
-
-    };
-
     render() {
         return (
             <div class="menu">
                 <h2 style={{ textAlign: 'center' }}>Menu Page</h2>
                 <div class="flex-display-items">
-                    {this.state.postData}
+                    {this.receivedData()}
                 </div>
-                <ReactPaginate
-                    previousLabel={"<<"}
-                    nextLabel={">>"}
-                    breakLabel={"..."}
-                    breakClassName={"break-me"}
-                    pageCount={this.state.pageCount}
-                    marginPagesDisplayed={2}
-                    pageRangeDisplayed={5}
-                    onPageChange={this.handlePageClick}
-                    containerClassName={"pagination"}
-                    subContainerClassName={"pages pagination"}
-                    activeClassName={"active"}/>
             </div>
         )
     }
 
 }
 
-const mapStateToProps = state => ({
-    user: state.restaurantReducer
-});
-
-
-export default connect(mapStateToProps)(DisplayMenu);
+export default graphql(restaurantDetails, {
+    options: () => {
+        return {
+            variables: {
+                _id: localStorage.getItem('id')
+            }
+        }
+    }
+})(DisplayMenu);
