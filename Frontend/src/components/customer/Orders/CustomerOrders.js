@@ -4,10 +4,11 @@ import './CustomerOrders.css'
 import { connect } from 'react-redux'
 import { addToCart, addItem, removeItem, removecart } from '../../../actions/cartActions'
 import { Link } from 'react-router-dom';
-import ReactPaginate from 'react-paginate';
 import '../../restaurantOwner/Paginate.css' 
-import { rooturl } from '../../../config/settings';
-import { imagepath } from '../../../config/imagepath';
+import {flowRight as compose} from 'lodash';
+import { graphql} from 'react-apollo';
+import { placeOrder} from '../../../mutations/customerMutation/placeOrderMutation'
+import { restaurantDetails } from '../../../queries/restaurantQueries/restaurantHomePageQueries'
 
 
 class CustomerOrders extends React.Component {
@@ -31,19 +32,14 @@ class CustomerOrders extends React.Component {
         this.handleTakeOutChange = this.handleTakeOutChange.bind(this)
         this.completeOrder = this.completeOrder.bind(this)
         this.CancelOrder = this.CancelOrder.bind(this)
-        this.viewDetails = this.viewDetails.bind(this)
     }
     componentDidMount() {
-        this.setState({
-            restaurantId: this.props.match.params.id,
-            customerID: this.props.user.id,
+        // this.setState({
+        //     restaurantId: this.props.match.params.id,
+        //     customerID: this.props.user.id,
 
-        })
+        // })
         this.receivedData()
-    }
-    viewDetails(menuId){
-        //Change to reuse restaurant component
-        return this.props.history.push(`/viewindividualdish/${menuId}`)
     }
     handleAddToCart(itemID, dishName, price) {
         let Orderdata = {
@@ -67,72 +63,62 @@ class CustomerOrders extends React.Component {
         event.preventDefault();
         this.setState({
             takeOutValue : event.target.value
-        })
+        }) 
     }
     completeOrder(restaurantId) {
         console.log("Take Out value", this.state.takeOutValue)
-        let OrderDetails = {
-            customerID: this.props.user._id,
-            customerName : this.props.user.firstName + ' ' + this.props.user.lastName,
-            customerImage : this.props.user.profileImage,
-            restaurantId: this.props.restaurant._id,
-            totalPrice: this.props.cartItems.total,
-            deliveryOption: this.state.takeOutValue,
-            delivery_status: 'Order Recieved',
-            deliveryFilter: 'New Order',
-            orderDetails : this.props.cartItems.addedItems
-        }
-        console.log("Restaurant Id",this.props.restaurant._id)
-        axios.defaults.headers.common['authorization'] = localStorage.getItem('token')
-        axios.post(rooturl+'/customerordersroute/sendorderdetails', OrderDetails)
-            .then(response => {
-                if (response.data.data.message === "success") {
-                    alert("Placed order successfully")
-                    this.props.history.push(`/customerorderhistory`)
-                }
-                else if (response.data.data.message === "error") {
-                    console.log('Could not complete order')
-                    this.props.history.push(`/customerhomepage/${this.props.user.id}`)
-                    this.props.removecart()
-                }
-            })
+        this.props.placeOrder({
+            variables : {
+                customerID: localStorage.getItem('id'),
+                customerName : this.props.user.firstName + ' ' + this.props.user.lastName,
+                restaurantId: this.props.match.params.id,
+                totalPrice: this.props.cartItems.total,
+                deliveryOption: this.state.takeOutValue,
+                delivery_status: 'Order Recieved',
+                deliveryFilter: 'New Order',
+                orderDetails : this.props.cartItems.addedItems
+            }
+
+        }).then(response =>{
+            console.log("Response status", response.data.placeOrder)
+            console.log("Response status", response.data.placeOrder.message)
+            console.log("Response status", response.data.placeOrder.status)
+            if(response.data.placeOrder.status === "200")
+            {   
+                alert(response.data.placeOrder.message)
+                this.props.removecart()
+                this.props.history.push(`/customerorderhistory`)
+                // window.location.reload()
+            }
+            else{
+                alert(response.data.placeOrder.message)
+                this.props.removecart()
+                this.props.history.push(`/customerhomepage/${localStorage.getItem('id')}`)
+            }
+            
+        })
     }
     receivedData() {
-        const slice = this.props.restaurant.menuItem.slice(this.state.offset, this.state.offset + this.state.perPage)
-        const postData = slice.map(menu => <React.Fragment>
+        var data = this.props.restaurantDetails;
+        if (data.loading) {
+            return (<div>Loading......</div>)
+        }
+        else {
+            data.restaurantDetails.map(menu => {
                <div class="card1">
-                <img src={imagepath+`${menu.dishImages[0]}`} alt="Avatar" class="card-img-top-items" alt="Card image cap" />
                     <div class="container-order-menu">
                         <p style={{textAlign:'left'}}><b> Dish Name: </b>{menu.dishName}</p>
                         <p style={{textAlign:'left'}}><b>Price: </b>{menu.price}</p>
-                        <button class="btn btn-primary" value={menu._id} onClick={() => this.viewDetails(menu._id)}>View Details</button>
                         <button class="btn btn-primary" value={menu._id} onClick={() => this.handleAddToCart(menu._id, menu.dishName, menu.price)}>Add to Cart</button>
                     </div>
                 </div>
-        </React.Fragment>)
-
-        this.setState({
-            pageCount: Math.ceil(this.props.restaurant.menuItem.length / this.state.perPage),
-
-            postData
-        })
+             })
     }
-    handlePageClick = (e) => {
-        const selectedPage = e.selected;
-        const offset = selectedPage * this.state.perPage;
-
-        this.setState({
-            currentPage: selectedPage,
-            offset: offset
-        }, () => {
-            this.receivedData()
-        });
-
-    };
+    }
 
     CancelOrder(restaurantID) {
         this.props.removecart()
-        this.props.history.push(`/restauranthomepage/${this.props.user.id}`)
+        this.props.history.push(`/restauranthomepage/${this.props.match.params.id}`)
     }
 
     render() {
@@ -164,20 +150,8 @@ class CustomerOrders extends React.Component {
                     <button class = "btn btn-primary" onClick={()=>{this.props.history.push(`/customerviewofrestaurant/${this.props.match.params.id}`)}}> Go Back to Restaurant Page</button>
                         <h2>Order Food from our Menu</h2>
                         <div class="flex-display-items">
-                        {this.state.postData}
+                        {this.receivedData()}
                         </div>
-                        <ReactPaginate
-                        previousLabel={"<<"}
-                        nextLabel={">>"}
-                        breakLabel={"..."}
-                        breakClassName={"break-me"}
-                        pageCount={this.state.pageCount}
-                        marginPagesDisplayed={2}
-                        pageRangeDisplayed={5}
-                        onPageChange={this.handlePageClick}
-                        containerClassName={"pagination"}
-                        subContainerClassName={"pages pagination"}
-                        activeClassName={"active"} />
                     </div>
                     <div class="td-items3">
                         {this.props.cartItems.addedItems ?
@@ -211,8 +185,8 @@ class CustomerOrders extends React.Component {
                                     <option value = "delivery">Delivery</option>
                                     </select>
                                 </form>
-                                <button class="btn btn-danger" onClick={() => this.completeOrder(this.props.restaurant._id)}>Complete Order</button>
-                                <button class="btn btn-danger" onClick={() => this.CancelOrder(this.props.restaurant._id)}>Cancel Order</button>
+                                <button class="btn btn-danger" onClick={() => this.completeOrder(this.props.match.params.id)}>Complete Order</button>
+                                <button class="btn btn-danger" onClick={() => this.CancelOrder(this.props.match.params.id)}>Cancel Order</button>
                                 {this.state.completeOrderFlag && <div>
 
                                 </div>}
@@ -225,8 +199,6 @@ class CustomerOrders extends React.Component {
 }
 const mapStateToProps = state => ({
     cartItems: state.cartReducer,
-    user: state.customerReducer,
-    restaurant : state.restaurantReducer
 });
 
 function mapDispatchToProps(dispatch) {
@@ -238,4 +210,16 @@ function mapDispatchToProps(dispatch) {
 
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(CustomerOrders)
+
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+    graphql(restaurantDetails,{
+        options: () => {
+            return {
+                variables: {
+                    _id: this.props.match.params.id
+                }
+            }
+        }
+    }),
+    graphql(placeOrder, { name: "placeOrder" })
+)(CustomerOrders));

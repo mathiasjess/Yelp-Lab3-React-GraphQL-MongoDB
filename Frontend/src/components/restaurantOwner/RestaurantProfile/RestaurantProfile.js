@@ -21,7 +21,7 @@ class RestaurantProfile extends React.Component {
             showEditDishesFlag: false,
             itemID: '',
         }
-    }
+    } 
 
     displayRestaurantDetails() {
         var data = this.props.data;
