@@ -4,7 +4,8 @@ import { Link, withRouter } from 'react-router-dom';
 import axios from 'axios';
 import { customerProfileUpdate } from '../../../actions/customerAction';
 import { connect } from 'react-redux';
-import { rooturl } from '../../../config/settings';
+import {updateCustomer} from '../../../mutations/customerMutation/updateCustomerMutation'
+import { graphql } from 'react-apollo';
 
 class UpdateCustomerProfile extends React.Component {
     constructor(props) {
@@ -35,48 +36,51 @@ class UpdateCustomerProfile extends React.Component {
     }
     handleChange(event) {
         event.preventDefault();
-        event.target.type === "file" ? this.setState({ [event.target.name]: event.target.files[0] }) : this.setState({
+         this.setState({
             [event.target.name]: event.target.value
         })
     }
 
     updateProfile(event) {
         event.preventDefault();
-        const data = new FormData()
-        data.append("id", this.props.user._id);
-        data.append("email", this.state.email);
-        data.append("firstName", this.state.firstName);
-        data.append("lastName", this.state.lastName);
-        data.append("DOB", this.state.DOB);
-        data.append("location", this.state.location);
-        data.append("city", this.state.city);
-        data.append("state", this.state.State);
-        data.append("country", this.state.country);
-        data.append("nickName", this.state.nickName);
-        data.append("phoneNumber", this.state.phoneNumber);
-        data.append("thingsILove", this.state.thingsILove);
-        data.append("findmeIn", this.state.findmeIn);
-        data.append("websiteDetails", this.state.websiteDetails);
-        data.append("profileImage", this.state.profileImage)
-        data.append("favourites", this.state.favourites);
-        data.append("headline", this.state.headline);
-        data.append("zipcode", this.state.zipcode);
-        console.log("Data", data)
-        axios.put(rooturl+`/customerprofileroute/updatecustomerprofile`, data)
-            .then((response) => {
-                if (response.data.data.message === "success") {
-                    alert('Updated Profile')
-                    this.setState({
-                        profileImage : response.data.data.data
-                    })
-                    this.updateallprofileData();
+        console.log("The favourites",this.state.favourites )
+        this.props.updateCustomer({
+            variables: {
+                customerId: localStorage.getItem('id'),
+                email: this.state.email,
+                firstName: this.state.firstName,
+                lastName: this.state.lastName,
+                DOB: this.state.DOB,
+                location: this.state.location,
+                city: this.state.city,
+                State: this.state.state,
+                country: this.state.country,
+                nickName: this.state.nickName,
+                phoneNumber: this.state.phoneNumber,
+                thingsILove: this.state.thingsILove,
+                profileImage: this.state.profileImage,
+                findmeIn: this.state.findmeIn,
+                websiteDetails: this.state.websiteDetails,
+                favourites: this.state.favourites,
+                headline: this.state.headline,
+                zipcode: this.state.zipcode
+            }
+        }).then(response =>{
+            console.log("Response status", response.data.updateCustomer)
+            console.log("Response status", response.data.updateCustomer.message)
+            console.log("Response status", response.data.updateCustomer.status)
+            if(response.data.updateCustomer.status === "200")
+            {   
+                alert(response.data.updateCustomer.message)
+                this.props.history.push(`/customerhomepage/${localStorage.getItem('id')}`)
+                // window.location.reload()
+            }
+            else{
+                alert(response.data.updateCustomer.message)
+            }
+            
+        })
 
-                }
-                else if (response.data.message === "error") {
-                    alert('Something went wrong. Please try again')
-                }
-                this.props.history.push(`/customerhomepage/${this.props.user.id}`)
-            })
     }
     componentDidMount() {
         console.log("Customer id", this.props.user._id)
@@ -85,7 +89,7 @@ class UpdateCustomerProfile extends React.Component {
             email: this.props.user.email,
             firstName: this.props.user.firstName,
             lastName: this.props.user.lastName,
-            DOB: this.props.user.DOB,  
+            DOB: this.props.user.DOB,
             location: this.props.user.location,
             city: this.props.user.city,
             State: this.props.user.state,
@@ -93,8 +97,8 @@ class UpdateCustomerProfile extends React.Component {
             nickName: this.props.user.nickName,
             phoneNumber: this.props.user.phoneNumber,
             thingsILove: this.props.user.thingsILove,
-            profileImage : this.props.user.profileImage,
-            findmeIn: this.props.user.findmeIn ,
+            profileImage: this.props.user.profileImage,
+            findmeIn: this.props.user.findmeIn,
             websiteDetails: this.props.user.websiteDetails,
             favourites: this.props.user.favourites,
             headline: this.props.user.headline,
@@ -102,7 +106,7 @@ class UpdateCustomerProfile extends React.Component {
         })
         console.log("Website", this.state.websiteDetails)
     }
-    updateallprofileData(){
+    updateallprofileData() {
         const data = {
             id: this.props.user.id,
             email: this.state.email,
@@ -118,7 +122,7 @@ class UpdateCustomerProfile extends React.Component {
             thingsILove: this.state.thingsILove,
             findmeIn: this.state.findmeIn,
             websiteDetails: this.state.websiteDetails,
-            profileImage : this.state.profileImage,
+            profileImage: this.state.profileImage,
             favourites: this.state.favourites,
             headline: this.state.headline,
             zipcode: this.state.zipcode
@@ -246,4 +250,4 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(UpdateCustomerProfile));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(graphql(updateCustomer, {name : "updateCustomer"})(UpdateCustomerProfile)));

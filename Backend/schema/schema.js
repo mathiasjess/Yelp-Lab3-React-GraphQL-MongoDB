@@ -135,6 +135,7 @@ const RootQuery = new GraphQLObjectType({
             type: new GraphQLList(restaurantOwnerType),
             args: { customerID: { type: GraphQLString } },
             async resolve(parent, args) {
+                console.log("Customer ID", args.customerID)
                 return await getCustomerReviews(args)
             }
         }
@@ -216,7 +217,6 @@ const Mutation = new GraphQLObjectType({
                 password: { type: GraphQLString },
             },
             async resolve(parent, args) {
-                console.log("Inside add dish". args.restaurantId)
                 return await customerRegister(args)
             }
         },
@@ -252,6 +252,7 @@ const Mutation = new GraphQLObjectType({
                 zipcode: { type: GraphQLString }
             },
             async resolve(parent, args) {
+                console.log("Update Customer Profile", args.customerId)
                 return await updateCustomerProfile(args)
             }
         },

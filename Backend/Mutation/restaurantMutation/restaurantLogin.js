@@ -39,46 +39,6 @@ const restaurantLogin = async (args) => {
             })
         }
     });
-
-
-    // new Promise((resolve, reject) => {
-    //         restaurant.find({ email: email }, function (error, result) {
-    //         console.log(result[0])
-    //         if (!result[0]) {
-    //             // returnObject.message = "nouser";
-    //             // res.json(returnObject);
-    //             savedLogin = { status: 401, message: "No user" }
-    //         }
-    //         loginresult = result[0]
-    //         resolve(result[0])
-    //     });
-    // })
-    //     .then((value) => {
-    //         new Promise((resolve, reject) => {
-    //             bcrypt.compare(password, value.password, (err, result) => {
-    //                 if (err) throw err;
-    //                 resolve([result, value]);
-    //             })
-    //         })
-    //             .then((value) => {
-    //                 if (value[0]) {
-    //                     const payload = {_id: loginresult._id, email:loginresult.email, role:'restaurant', name: loginresult.restaurantName};
-    //                     console.log(payload)
-    //                     const token = jwt.sign(payload, secret, {
-    //                         expiresIn : 1008000
-    //                     });
-    //                     savedLogin = { status: 401, message : "JWT "+ token }
-    //                     // returnObject.message = "success";
-    //                     // returnObject.data = value[1]
-    //                     // returnObject.token = "JWT "+ token
-    //                     // res.status(200).end("JWT "+ token)
-    //                 }
-    //                 else {
-    //                     savedLogin = { status: 200, message : "Invalid credentials" }
-    //                 }
-
-    //             })
-    //     })
     console.log("Login results", savedLogin)
     return savedLogin
 }

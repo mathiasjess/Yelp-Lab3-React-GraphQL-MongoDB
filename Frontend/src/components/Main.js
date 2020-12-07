@@ -59,6 +59,13 @@ class Main extends Component {
                     <Route path="/viewcustomerreviews" component = {CustomerReviews} />
                     <Route path="/orders" component = {Orders} />
                     <Route path="/updateorder/:id" component = {UpdateOrder} />
+
+
+                    <Route path="/register/customerregister" component = {CustomerRegister} />
+                    <Route path="/login/customerlogin" component = {CustomerLogin}/>
+                    <Route path="/customerhomepage/:id" component = {CustomerHomePage}/>
+                    <Route path="/updatecustomerprofile" component = {UpdateCustomerProfile} />
+                    <Route path="/searchrestaurant" component = {SearchRestaurant} />
                 </div>
             </div>
         )

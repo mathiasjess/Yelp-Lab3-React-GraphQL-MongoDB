@@ -10,8 +10,9 @@ import 'moment-timezone';
 import { customerReviews } from '../../../actions/customerOtherDetailsAction'
 import { customerLogin } from '../../../actions/customerAction'
 import { userfollowers } from '../../../actions/customerAction'
-import { rooturl } from '../../../config/settings';
-import { imagepath } from '../../../config/imagepath';
+import ReviewsOnProfile from './ReviewsOnProfile'
+import { graphql} from 'react-apollo';
+import { customerDetails } from '../../../queries/customerQueries/customerHomePageQueries'
 
 class ProfileDetails extends React.Component {
     constructor(props) {
@@ -23,47 +24,6 @@ class ProfileDetails extends React.Component {
         this.handleOrderPage = this.handleOrderPage.bind(this)
         this.handleEventsPage = this.handleEventsPage.bind(this)
     }
-    async componentDidMount(props) {
-        let reviewsResult = []
-        let individualResult = {}
-        console.log("Params", this.props.match.params.id)
-        axios.defaults.headers.common['authorization'] = localStorage.getItem('token')
-        await axios.get(rooturl+`/customerprofileroute/customerprofile/${this.props.match.params.id}`)
-            .then((response) => {
-                if (response.data.data.message === "success") {
-                    console.log("Profile data", response.data.data.data)
-                    this.setState({
-                        customerDetails: response.data.data.data
-                    })
-                    this.props.customerLogin(response.data.data.data[0]);
-                }
-
-            })
-        axios.defaults.headers.common['authorization'] = localStorage.getItem('token')
-        await axios.get(rooturl+`/customerreviewroute/getcustomerreviews/${this.props.match.params.id}`)
-            .then((response) => {
-                if (response.data.data.message === "success") {
-                    console.log(response.data.data.data)
-                    {
-                        response.data.data.data && response.data.data.data.map(item => {
-                            individualResult = {
-                                restaurantID: item._id,
-                                restaurantName: item.restaurantName,
-                                restaurantImage: item.restaurantImage,
-                                reviewDate: item.reviews[0].reviewDate,
-                                ratings: item.reviews[0].ratings,
-                                comments: item.reviews[0].comments
-                            }
-                            reviewsResult.push(individualResult)
-                            individualResult = {}
-                        })
-                    }
-                    console.log("Refactored reviews", reviewsResult)
-                    this.props.customerReviews(reviewsResult)
-                }
-
-            })
-    }
     handleOrderPage(custID) {
         this.props.history.push('/customerorderhistory')
     }
@@ -71,26 +31,24 @@ class ProfileDetails extends React.Component {
     handleEventsPage(custID) {
         this.props.history.push(`/customerevents/${custID}`)
     }
-    render() {
-        let flag = false
-        if(this.props.user.followers){
-            this.props.user.followers.map((follower,i)=>{
-                if(follower.customerID === localStorage.getItem('id')){
-                    return flag = true
-                }
-            })
+    displayCustomerDetails() {
+        var data = this.props.data;
+        if (data.loading) {
+            return (<div>Loading......</div>)
         }
-        let renderprofilepage = (
-            <div class="table">
+        else {
+            this.props.customerLogin(data.customerDetails[0])
+            return data.customerDetails.map(customer => {
+            return <div class="table">
                 <div class="tr-middle">
                     <div class="td-11">
-                        {this.props.user.profileImage ? <img src={imagepath+`${this.props.user.profileImage}`} alt="Avatar" class="photo-box-img" /> : <img class="photo-box-img" src={default_image} alt="Avatar" />}
+                        <img class="photo-box-img" src={default_image} alt="Avatar" />
                     </div>
                     <div class="td-21">
-                        <h1> {this.props.user.firstName} {this.props.user.lastName} (Also known as {this.props.user.nickName})</h1>
-                        <h3>HeadLine: #{this.props.user.headline} </h3>
-                        <h5> {this.props.user.city}, {this.props.user.state} </h5>
-                        <h6> Favourites Include: {this.props.user.favourites} </h6>
+                        <h1> {customer.firstName} {customer.lastName} (Also known as {customer.nickName})</h1>
+                        <h3>HeadLine: #{customer.headline} </h3>
+                        <h5> {customer.city}, {customer.state} </h5>
+                        <h6> Favourites Include: {customer.favourites} </h6>
                     </div>
                     <div class="td-31">
                         <ul class="nav flex-column">
@@ -110,11 +68,11 @@ class ProfileDetails extends React.Component {
                                     {/* <span  class="nav-link" >Update  Restaurant Profile</span>*/}
                                 </li>
                                 <li class="nav-item">
-                                    <button class="profileLinks" onClick={() => this.handleOrderPage(this.props.user.id)}>Order History</button>
+                                    <button class="profileLinks" onClick={() => this.handleOrderPage(localStorage.getItem('id'))}>Order History</button>
                                     {/* <span  class="nav-link" >Update  Restaurant Profile</span>*/}
                                 </li>
                                 <li class="nav-item">
-                                    <button class="profileLinks" onClick={() => this.handleEventsPage(this.props.user.id)}> Registered Events</button>
+                                    <button class="profileLinks" onClick={() => this.handleEventsPage(localStorage.getItem('id'))}> Registered Events</button>
                                     {/* <span  class="nav-link" >Update  Restaurant Profile</span>*/}
                                 </li>
                                 <li class="nav-item">
@@ -146,54 +104,35 @@ class ProfileDetails extends React.Component {
                     </div>
                     <div class="td-2">
                         <h2>Reviews</h2>
-                        {this.props.custReviews.reviews.length > 1 && this.props.custReviews.reviews.map((item, i) => {
-                            return <div class="Reviews" key={i}>
-                                <h4>Ratings: {item.ratings}/5</h4>
-                                <div class="reviews-header-details">
-                                    {item.restaurantImage ? <img src={imagepath+`${item.restaurantImage}`} alt="Avatar" class="photo-box-rest" /> : <img class="photo-box-rest" src={restaurant_image} alt="Avatar" />}
-                                    <h5 style={{ paddingTop: '1rem' }}>  {item.restaurantName}</h5>
-                                </div>
-                                <p style={{ paddingTop: '2rem' }}><b>Date: </b><Moment>{item.reviewDate}</Moment></p>
-                                <p><b>Comments: </b>{item.comments}</p>
-                            </div>
-                        })}
-                        {this.props.custReviews.reviews.length === 1 &&
-                            <div class="Reviews">
-                                <h4>Ratings: {this.props.custReviews.reviews[0].ratings}/5</h4>
-                                <div class="reviews-header-details">
-                                    {this.props.custReviews.reviews[0].restaurantImage ? <img src={imagepath+`${this.props.custReviews.reviews[0].restaurantImage}`} alt="Avatar" class="photo-box-rest" /> : <img class="photo-box-rest" src={restaurant_image} alt="Avatar" />}
-                                    <h5 style={{ paddingTop: '1rem' }}>  {this.props.custReviews.reviews[0].restaurantName}</h5>
-                                </div>
-                                <p style={{ paddingTop: '2rem' }}><b>Date: </b><Moment>{this.props.custReviews.reviews[0].reviewDate}</Moment></p>
-                                <p><b>Comments: </b>{this.props.custReviews.reviews[0].comments}</p>
-                            </div>
-                        }
+                        <ReviewsOnProfile />
                     </div>
                     <div class="td-3">
                         <h2> About Me</h2>
                         <p class="details-heading">Location</p>
-                        <p class="details-info">{this.props.user.location}{this.props.user.city}, {this.props.user.state} {this.props.user.country}, {this.props.user.zipcode}</p>
+                        <p class="details-info">{customer.location}{customer.city}, {customer.state} {customer.country}, {customer.zipcode}</p>
                         <p class="details-heading">Date of Birth</p>
-                        <p class="details-info"><Moment>{this.props.user.DOB}</Moment></p>
+                        <p class="details-info"><Moment>{customer.DOB}</Moment></p>
                         <p class="details-heading">Yelping Since</p>
-                        <p class="details-info"><Moment>{this.props.user.yelpingSince}</Moment></p>
+                        <p class="details-info"><Moment>{customer.yelpingSince}</Moment></p>
                         <p class="details-heading">Things I Love</p>
                         <p class="details-info">{this.state.thingsILove}</p>
                         <p class="details-heading">Find me In</p>
-                        <p class="details-info">{this.props.user.findmeIn}</p>
+                        <p class="details-info">{customer.findmeIn}</p>
                         <p class="details-heading">My Blog or Website</p>
-                        <p class="details-info">{this.props.user.websiteDetails}</p>
+                        <p class="details-info">{customer.websiteDetails}</p>
                         <p class="details-heading">Email ID</p>
-                        <p class="details-info">{this.props.user.email}</p>
+                        <p class="details-info">{customer.email}</p>
                         <p class="details-heading">Phone Number</p>
-                        <p class="details-info">{this.props.user.phoneNumber}</p>
+                        <p class="details-info">{customer.phoneNumber}</p>
                     </div>
                 </div>
-            </div>
-        )
+            </div> })
+        }
+    }
+    render() {
         return (
             <div>
-                {this.props.user ? renderprofilepage : <p>Loading......</p>}
+            {this.displayCustomerDetails()}
             </div>
         )
     }
@@ -201,15 +140,21 @@ class ProfileDetails extends React.Component {
 }
 const mapStateToProps = state => ({
     user: state.customerReducer,
-    custReviews: state.customerOtherDetailsReducer
 });
 
 function mapDispatchToProps(dispatch) {
     return {
-        customerReviews: (data) => dispatch(customerReviews(data)),
         customerLogin: (data) => dispatch(customerLogin(data)),
     }
 }
 
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ProfileDetails));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(graphql(customerDetails, {
+    options: () => {
+        return {
+            variables: {
+                _id: localStorage.getItem('id')
+            }
+        }
+    }
+})(ProfileDetails)));

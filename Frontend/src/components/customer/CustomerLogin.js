@@ -1,7 +1,6 @@
 import React from 'react'
-import axios from 'axios';
-import Cookies from 'js-cookie';
-import { rooturl } from '../../config/settings'
+import { graphql } from 'react-apollo';
+import { customerLogin } from '../../mutations/customerMutation/loginMutation'
 
  // @ts-ignore  
  import jwt_decode from "jwt-decode";
@@ -13,7 +12,7 @@ class CustomerLogin extends React.Component {
         this.state = {
             email:'',
             password:'',
-            credentials : '',
+            token : '',
             customerID: ''
         }
         this.ChangeHandler = this.ChangeHandler.bind(this)
@@ -26,41 +25,38 @@ class CustomerLogin extends React.Component {
         })
     }
 
-    submitLogin(event){
+    async submitLogin(event){
         event.preventDefault();
-        const customerLoginData = {
+        await this.props.customerLogin({
+            variables : {
             email : this.state.email,
             password : this.state.password
         }
-        //set the with credentials to true
-        axios.defaults.withCredentials = true;
-        //make a post request with the user data
-        axios.post(rooturl+'/customerloginroute/customerlogin',customerLoginData)
-        .then(response => {
-            if(response.data.data.message === "success"){
-                console.log("The data got is", response.data.data.data)
-                console.log("Token", response.data.data.token)
-                this.setState({
-                   credentials: response.data.data,
-                   customerID : response.data.data.data._id
-                })
-                // this.props.customerLogin(response.data.data);
-            }
-            else if (response.data.message === "error"){
-                alert("Invalid credentials")
-            }
-        })
+    }).then(response =>{
+        console.log("Response status", response.data.customerLogin)
+        console.log("Response status", response.data.customerLogin.message)
+        console.log("Response status", response.data.customerLogin.status)
+        if(response.data.customerLogin.status === "200")
+        {
+            this.setState({
+                token: response.data.customerLogin.message
+            })
+        }
+        else{
+            alert("Invalid credentials")
+        }
+        
+    })
     }
     render() {
-        if (this.state.credentials){
-            localStorage.setItem("token", this.state.credentials.token);
-            var decoded = jwt_decode(this.state.credentials.token.split(' ')[1]);
+        if (this.state.token.length > 0){
+            localStorage.setItem("token", this.state.token);
+            var decoded = jwt_decode(this.state.token.split(' ')[1]);
             localStorage.setItem("id",decoded._id);
             localStorage.setItem("email",decoded.email);
-            localStorage.setItem("name",this.state.credentials.firstName + ' '+ this.state.credentials.lastName);
+            localStorage.setItem("name",decoded.firstName + ' '+ decoded.lastName);
             localStorage.setItem("role",decoded.role);
-            localStorage.getItem("location",this.state.credentials.zipcode);
-            this.props.history.replace(`/customerhomepage/${this.state.customerID}`);
+            this.props.history.replace(`/customerhomepage/${localStorage.getItem('id')}`);
         }
         return (
             <form>
@@ -80,4 +76,4 @@ class CustomerLogin extends React.Component {
 
 }
 
-export default CustomerLogin;
+export default graphql(customerLogin, { name: "customerLogin" })(CustomerLogin);

@@ -8,7 +8,6 @@ import { connect } from 'react-redux';
 import { Route, Link, withRouter } from 'react-router-dom';
 import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
 import Moment from 'react-moment';
-import { imagepath } from '../../../config/imagepath';
 import { graphql} from 'react-apollo';
 import { restaurantDetails } from '../../../queries/restaurantQueries/restaurantHomePageQueries'
 

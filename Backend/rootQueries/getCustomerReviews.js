@@ -12,6 +12,7 @@ const getCustomerReviews = async (args) => {
                 returnObject = result
             }
         })
+    // console.log("Review results", returnObject)
     return returnObject
 }
 

@@ -1,6 +1,7 @@
 import React from 'react'
-import axios from 'axios';
-import { rooturl } from '../../config/settings'
+import {customerRegistration} from '../../mutations/customerMutation/registerMutation'
+import { graphql } from 'react-apollo';
+
 class customerRegister extends React.Component {
     constructor() {
         super()
@@ -22,27 +23,27 @@ class customerRegister extends React.Component {
     submitCustomerRegistration(event){
         //prevent page from refresh
         event.preventDefault();
-        const customerRegistrationData = {
+        this.props.customerRegistration({
+            variables : {
             firstName: this.state.firstName,
             lastName: this.state.lastName,
             email: this.state.email,
             password: this.state.password
         }
-        //set the with credentials to true
-        axios.defaults.withCredentials = true;
-        //make a post request with the user data
-        axios.post(rooturl+'/customerregistrationroute/customerregister',customerRegistrationData)
-        .then(response => {
-            console.log("Status Code : ",response.status);
-            if(response.status === 200){
-                alert("User Registration successful")
-                this.props.history.replace('/login/customerlogin');
-            }
-        })
-        .catch(error=>{
-            console.log(error.response.data.msg)
-            alert(error.response.data.msg)
-        })
+    }).then(response =>{
+        console.log("Response status", response.data.customerRegistration)
+        console.log("Response status", response.data.customerRegistration.message)
+        console.log("Response status", response.data.customerRegistration.status)
+        if(response.data.customerRegistration.status === "200")
+        {
+            alert(response.data.customerRegistration.message)
+            this.props.history.replace('/login/customerlogin');
+        }
+        else{
+            alert("Could not register")
+        }
+        
+    })
     }
     render() {
         return (
@@ -67,4 +68,4 @@ class customerRegister extends React.Component {
 
 }
 
-export default customerRegister;
+export default graphql(customerRegistration, {name : "customerRegistration"})(customerRegister);

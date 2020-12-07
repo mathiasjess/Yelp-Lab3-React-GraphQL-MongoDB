@@ -4,11 +4,12 @@ import axios from 'axios'
 import { connect } from 'react-redux'
 import default_pic from '../../../images/restaurantprofileImage.png'
 import yelp_brand from '../../../images/yelp_brand.png'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
 import { restaurantLogin } from '../../../actions/restaurantAction'
-import { rooturl } from '../../../config/settings';
-import { imagepath } from '../../../config/imagepath';
+import {searchRestaurant} from '../../../queries/customerQueries/searchRestaurantQueries'
+import { graphql} from 'react-apollo';
+
 
 class SearchRestaurant extends React.Component {
     constructor(props) {
@@ -23,43 +24,72 @@ class SearchRestaurant extends React.Component {
                 location: false
             },
             searchResults: [],
-            staticResults: []
+            staticResults: [],
+            handleFilterFlag : true
         }
         this.goToRestaurant = this.goToRestaurant.bind(this)
         this.Filter = this.Filter.bind(this)
         this.displayMarkers = this.displayMarkers.bind(this)
     }
-    componentDidMount() {
-        axios.defaults.headers.common['authorization'] = localStorage.getItem('token')
-        axios.get(rooturl+'/customersearchroute/searchforrestaurant', { params: [this.props.location.aboutProps.searchParameter1] })
-            .then((response) => {
-                console.log(response.data.data)
-                if (response.data.data.message === "success") {
-                    this.setState({
-                        searchResults: response.data.data.data,
-                        staticResults: response.data.data.data
-                    })
-                } else if (response.data.message === "error") {
-                    alert("No result found")
-                    this.props.history.push(`/customerhomepage/${this.props.user.id}`)
-                }
-            })
 
-    }
-    async goToRestaurant(restaurantId) {
-        axios.defaults.headers.common['authorization'] = localStorage.getItem('token')
-        await axios.get(rooturl+`/customersearchroute/restaurantprofiledetails/${restaurantId}`)
-            .then((response) => {
-                if (response.data.data.message === "success") {
-                    this.props.restaurantLogin(response.data.data.data)
-                }
+    displaySearchResults(){
+        var data = this.props.data;
+        if (data.loading) {
+            return (<div>Loading......</div>)
+        }
+        else {
+            return data.searchRestaurant.map(result => {
+            return <div class="card">
+            <div class="search-res-header">
+             <img class="card-img-top-search" src={default_pic} alt="Card image cap" />}
+                <h4 style={{ paddingTop: '45px' }}>{result.restaurantName}</h4>
+            </div>
+            <div class="card-body">
+                <p><b>Address:</b>{result.location},{result.city}-{result.zipcode}</p>
+                <p><b>Cuisine:</b> {result.cuisine}</p>
+                <p><b> Description:</b>{result.description}</p>
+                <p><b>Mode of Delivery:</b></p>
+                <div class="services1">
+                    <h6>{result.curbPickup ? <span class="glyphicon glyphicon-ok">Curbside Pickup</span> : <span class="glyphicon glyphicon-remove">Curbside Pickup</span>}</h6>
+                    <h6>{result.yelpDelivery ? <span class="glyphicon glyphicon-ok">Yelp Delivery </span> : <span class="glyphicon glyphicon-remove">Yelp Delivery</span>}</h6>
+                    <h6>{result.dineIn ? <span class="glyphicon glyphicon-ok">Dine In </span> : <span class="glyphicon glyphicon-remove">Dine In</span>}</h6>
+                </div>
+                <p><b>Phone No:</b>{result.contact}</p>
+                <button class="btn btn-danger" onClick={() => this.props.history.push(`/customerviewofrestaurant/${result._id}`)}>Visit website</button>
+            </div>
+        </div>
             })
-            this.props.history.push(`/customerviewofrestaurant/${restaurantId}`)
-        // this.props.history.push(`/customerviewofrestaurant/${restaurantId}/${delivery_option}`)
+        }
     }
+
+    displayFilteredSearchResults(){
+            return this.state.searchResults.map(result => {
+            return <div class="card">
+            <div class="search-res-header">
+                <img class="card-img-top-search" src={default_pic} alt="Card image cap" />}
+                <h4 style={{ paddingTop: '45px' }}>{result.restaurantName}</h4>
+            </div>
+            <div class="card-body">
+                <p><b>Address:</b>{result.location},{result.city}-{result.zipcode}</p>
+                <p><b>Cuisine:</b> {result.cuisine}</p>
+                <p><b> Description:</b>{result.description}</p>
+                <p><b>Mode of Delivery:</b></p>
+                <div class="services1">
+                    <h6>{result.curbPickup ? <span class="glyphicon glyphicon-ok">Curbside Pickup</span> : <span class="glyphicon glyphicon-remove">Curbside Pickup</span>}</h6>
+                    <h6>{result.yelpDelivery ? <span class="glyphicon glyphicon-ok">Yelp Delivery </span> : <span class="glyphicon glyphicon-remove">Yelp Delivery</span>}</h6>
+                    <h6>{result.dineIn ? <span class="glyphicon glyphicon-ok">Dine In </span> : <span class="glyphicon glyphicon-remove">Dine In</span>}</h6>
+                </div>
+                <p><b>Phone No:</b>{result.contact}</p>
+                <button class="btn btn-danger" onClick={() => this.props.history.push(`/customerviewofrestaurant/${result._id}`)}>Visit website</button>
+            </div>
+        </div>
+            })
+    }
+
     Filter(e) {
         this.setState({
-            searchResults: this.state.staticResults
+            handleFilterFlag : false,
+            searchResults: this.props.data.searchRestaurant
         })
         const name = e.target.name;
         this.setState(((prevState) => {
@@ -73,37 +103,37 @@ class SearchRestaurant extends React.Component {
             console.log(this.state.delivery.curbPickup)
             if (this.state.delivery.location === true) {
                 this.setState(({
-                    searchResults: this.state.searchResults.filter((result) => {
+                    searchResults: this.props.data.searchRestaurant.filter((result) => {
                         return result.zipcode === this.props.user.zipcode;
                     })
-                }), function () { console.log("New results", this.state.searchResults) })
+                }), function () { this.displayFilteredSearchResults() })
             }
             else if (this.state.delivery.curbPickup === true) {
                 this.setState(({
-                    searchResults: this.state.searchResults.filter((result) => {
+                    searchResults: this.props.data.searchRestaurant.filter((result) => {
                         return result.curbPickup === true;
                     })
-                }), function () { console.log("New results", this.state.searchResults) })
+                }), function () { this.displayFilteredSearchResults()})
             }
             else if (this.state.delivery.dineIn === true) {
                 this.setState(({
-                    searchResults: this.state.searchResults.filter((result) => {
+                    searchResults: this.props.data.searchRestaurant.filter((result) => {
                         return result.dineIn === true;
                     })
-                }), function () { console.log("New results", this.state.searchResults) })
+                }), function () { this.displayFilteredSearchResults()})
             }
             else if (this.state.delivery.yelpDelivery === true) {
                 this.setState(({
-                    searchResults: this.state.searchResults.filter((result) => {
+                    searchResults: this.props.data.searchRestaurant.filter((result) => {
                         return result.yelpDelivery === true;
                     })
-                }), function () { console.log("New results", this.state.searchResults) })
+                }), function () { this.displayFilteredSearchResults() })
             }
         });
 
     }
     displayMarkers = () => {
-        return this.state.searchResults.map((store, index) => {
+        return this.props.data.searchRestaurant.map((store, index) => {
             return <Marker key={index} id={index} position={{
                 lat: store.latitude,
                 lng: store.longitude
@@ -170,27 +200,7 @@ class SearchRestaurant extends React.Component {
                         </div>
                     </div>
                     <div class="td-restaurant">
-                        {this.state.searchResults.map((result, i) => {
-                            return (<div class="card" key={i}>
-                                <div class="search-res-header">
-                                    {result.restaurantImage ? <img src={imagepath+`${result.restaurantImage}`} alt="Avatar" class="card-img-top-search" /> : <img class="card-img-top-search" src={default_pic} alt="Card image cap" />}
-                                    <h4 style={{ paddingTop: '45px' }}>{result.restaurantName}</h4>
-                                </div>
-                                <div class="card-body">
-                                    <p><b>Address:</b>{result.location},{result.city}-{result.zipcode}</p>
-                                    <p><b>Cuisine:</b> {result.cuisine}</p>
-                                    <p><b> Description:</b>{result.description}</p>
-                                    <p><b>Mode of Delivery:</b></p>
-                                    <div class="services1">
-                                        <h6>{result.curbPickup ? <span class="glyphicon glyphicon-ok">Curbside Pickup</span> : <span class="glyphicon glyphicon-remove">Curbside Pickup</span>}</h6>
-                                        <h6>{result.yelpDelivery ? <span class="glyphicon glyphicon-ok">Yelp Delivery </span> : <span class="glyphicon glyphicon-remove">Yelp Delivery</span>}</h6>
-                                        <h6>{result.dineIn ? <span class="glyphicon glyphicon-ok">Dine In </span> : <span class="glyphicon glyphicon-remove">Dine In</span>}</h6>
-                                    </div>
-                                    <p><b>Phone No:</b>{result.contact}</p>
-                                    <button class="btn btn-danger" onClick={() => this.goToRestaurant(result._id)}>Visit website</button>
-                                </div>
-                            </div>)
-                        })}
+                        {this.state.handleFilterFlag ? this.displaySearchResults() : this.displayFilteredSearchResults()}
                     </div>
                     <div class="td-maps">
                         <Map
@@ -210,16 +220,13 @@ class SearchRestaurant extends React.Component {
 }
 
 
-const mapStateToProps = state => ({
-    user: state.customerReducer
-});
 
-function mapDispatchToProps(dispatch) {
-    return {
-        restaurantLogin: (data) => dispatch(restaurantLogin(data))
+export default withRouter(graphql(searchRestaurant, {
+    options: () => {
+        return {
+            variables: {
+                searchParameter: this.props.location.aboutProps.searchParameter1
+            }
+        }
     }
-}
-
-export default GoogleApiWrapper({
-    apiKey: 'AIzaSyCiheh-O9omWKbtCfWf-S539GT82IK8aNQ'
-})(connect(mapStateToProps, mapDispatchToProps)(SearchRestaurant));
+})(SearchRestaurant));

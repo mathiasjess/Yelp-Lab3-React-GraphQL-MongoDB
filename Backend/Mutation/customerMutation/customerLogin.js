@@ -39,7 +39,6 @@ const customerLogin = async (args) => {
             })
         }
     });
-    console.log("Login results", savedLogin)
     return savedLogin
 }
 

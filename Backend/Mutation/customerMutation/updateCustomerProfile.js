@@ -9,7 +9,7 @@ const updateCustomerProfile = async (args) => {
         DOB :args.DOB,
         location: args.location,
         city: args.city,
-        state: args.state,
+        state: args.State,
         country: args.country,
         nickName: args.nickName,
         phoneNumber: args.phoneNumber,
@@ -20,6 +20,7 @@ const updateCustomerProfile = async (args) => {
         headline: args.headline,
         zipcode: args.zipcode
     }
+    console.log("The args for updated customer", updateObject)
     await customer.updateOne({_id:args.customerId}, updateObject, (err, result) => {
         console.log("result", result);
         if (err) {

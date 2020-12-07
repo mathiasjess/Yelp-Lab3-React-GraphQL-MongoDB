@@ -6,6 +6,8 @@ import { connect } from 'react-redux'
 import Moment from 'react-moment';
 import { imagepath } from '../../../config/imagepath';
 import { rooturl } from '../../../config/settings';
+import {updateOrderStatus} from '../../../mutations/restaurantMutations/updateOrderMutation'
+import { graphql } from 'react-apollo';
 
 class UpdateOrder extends React.Component {
     constructor(props) {
@@ -16,36 +18,17 @@ class UpdateOrder extends React.Component {
             optionValue: '',
         }
         this.handleCategoryChange = this.handleCategoryChange.bind(this)
-        this.updateOrderStatus = this.updateOrderStatus.bind(this)
+        this.updateOrderStatuses= this.updateOrderStatuses.bind(this)
         this.cancelOrder = this.cancelOrder.bind(this)
     }
-    componentDidMount() {
-        this.props.user.orders && this.props.user.orders.map(order=>{
-            if(order._id === this.props.match.params.id)
-            return this.setState({
-                orderSummary : order
-            })
-        })
-        // axios.all([
-        //     axios.get(`http://localhost:3001/restaurantorders/individualrestaurantordersummary/${this.props.match.params.id}`),
-        //     axios.get(`http://localhost:3001/restaurantorders/individualfetchrestaurantorderdetails/${this.props.match.params.id}`)
-        // ])
-        //     .then(axios.spread((response1, response2) => {
-        //         console.log(response1.data.data[0])
-        //         this.setState({
-        //             orderSummary: response1.data.data[0],
-        //             orderDetails: response2.data.data,
-        //             optionValue: response1.data.data[0].delivery_status
-        //         })
-        //     }))
-    }
+
     handleCategoryChange(event) {
         event.preventDefault();
         this.setState({
             optionValue: event.target.value
         })
     }
-    updateOrderStatus(event) {
+    updateOrderStatuses(event) {
         event.preventDefault();
         console.log("Delivery Filter", this.props.location.state.detail.deliveryFilter)
 
@@ -57,44 +40,48 @@ class UpdateOrder extends React.Component {
             deliveryFilter = this.props.location.state.detail.deliveryFilter
         }
         console.log("Delivery Filter", deliveryFilter)
-
-        const data = {
+        this.props.updateOrderStatus({
+            variables : {
             orderID: this.props.location.state.detail._id,
             delivery_status: this.state.optionValue,
             deliveryFilter : deliveryFilter
         }
-        console.log("Data", data)
-        axios.defaults.headers.common['authorization'] = localStorage.getItem('token')
-        axios.put(rooturl+'/restaurantordersroute/updateorderstatus', data).
-            then(response => {
-                if (response.data.data.message === "success") {
-                    alert("Updated Order Status")
-                    this.props.history.push('/orders')
-                }
-                else{
-                    alert("Something went wrong. Could not cancel order")
-                }
-            })
+    }).then(response=>{
+        console.log("Response status", response.data.updateOrderStatus)
+        console.log("Response status", response.data.updateOrderStatus.message)
+        console.log("Response status", response.data.updateOrderStatus.status)
+        if(response.data.updateOrderStatus.status === "200")
+        {   
+            alert("Updated Order Status")
+            this.props.history.push('/orders')
+        }
+        else{
+            alert("Something went wrong. Could not cancel order")
+        }
+    })
 
     }
     cancelOrder(event) {
         event.preventDefault();
-        const data = {
+        this.props.updateOrderStatus({
+            variables : {
             orderID: this.props.location.state.detail._id,
             delivery_status: 'Cancelled Order',
             deliveryFilter: 'Cancelled Order'
         }
-        axios.defaults.headers.common['authorization'] = localStorage.getItem('token')
-        axios.put(rooturl+'/restaurantordersroute/cancelorder', data).
-            then(response => {
-                if (response.data.data.message === "success") {
-                    alert("Cancelled Order")
-                    this.props.history.push('/orders')
-                }
-                else{
-                    alert("Something went wrong. Could not cancel order")
-                }
-            })
+    }).then(response=>{
+        console.log("Response status", response.data.updateOrderStatus)
+        console.log("Response status", response.data.updateOrderStatus.message)
+        console.log("Response status", response.data.updateOrderStatus.status)
+        if(response.data.updateOrderStatus.status === "200")
+        {   
+            alert("Updated Order Status")
+            this.props.history.push('/orders')
+        }
+        else{
+            alert("Something went wrong. Could not cancel order")
+        }
+    })
     }
 
     render() {
@@ -168,7 +155,7 @@ class UpdateOrder extends React.Component {
                                 <li>
                                 <div class="order-update">
                                     {status}
-                                    <button class="btn btn-primary" onClick={this.updateOrderStatus}>Update Order Status</button>
+                                    <button class="btn btn-primary" onClick={this.updateOrderStatuses}>Update Order Status</button>
                                     <button class="btn btn-danger" onClick={this.cancelOrder}>Cancel Order</button>
                                 </div>
                                 </li>
@@ -182,8 +169,4 @@ class UpdateOrder extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
-    user: state.restaurantReducer
-});
-
-export default connect(mapStateToProps)(UpdateOrder);
+export default graphql(updateOrderStatus, {name : "updateOrderStatus"})(UpdateOrder);
