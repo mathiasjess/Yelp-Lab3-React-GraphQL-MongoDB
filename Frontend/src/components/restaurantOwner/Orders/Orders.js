@@ -49,7 +49,7 @@ class RestaurantOrderHistory extends React.Component {
                                 {
                                     id: summary.customerID,
                                 }
-                            }}>
+                            }} onClick={()=>{localStorage.setItem('customerID',summary.customerID )}}>
                                 <h5>{summary.customerName}</h5></Link>
                         </div>
                         <div class="order-footer">

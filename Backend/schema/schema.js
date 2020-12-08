@@ -49,21 +49,6 @@ const statusType = new GraphQLObjectType({
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
-        restaurantsDetails: {
-            type: new GraphQLList(restaurantOwnerType),
-            resolve(parent, args) {
-                return restaurant.find({}, (err, result) => {
-                    if (err) {
-                        throw err
-                    }
-                    else {
-                        // console.log("Result", result)
-                        return result
-                    }
-                })
-
-            }
-        },
         restaurantDetails: {
             type: new GraphQLList(restaurantOwnerType),
             args: { _id: { type: GraphQLString } },
@@ -85,21 +70,6 @@ const RootQuery = new GraphQLObjectType({
             args: { restaurantID: { type: GraphQLString } },
             async resolve(parent, args) {
                 return await fetchRestaurantOrderSummary(args)
-            }
-        },
-        customersDetails: {
-            type: new GraphQLList(customerType),
-            resolve(parent, args) {
-                return customer.find({}, (err, result) => {
-                    if (err) {
-                        throw err
-                    }
-                    else {
-                        // console.log("Result", result)
-                        return result
-                    }
-                })
-
             }
         },
         customerDetails: {
