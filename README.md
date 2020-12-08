@@ -4,11 +4,11 @@
  Steps to run the application
  
 Run the following commands to start the react server on the frontend
- cd Frontend
- npm i
- np start
+ / cd Frontend
+ / npm i
+ / np start
  
- Run the following commands to start the server on the frontend
- cd Backend
- npm i
- node index.js
+Run the following commands to start the server on the frontend
+ / cd Backend
+ / npm i
+ / node index.js
