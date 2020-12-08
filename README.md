@@ -1,5 +1,5 @@
 # Yelp-Lab3-react-node-garphql-mongodb
- Prototype of yelp application using react node and mysql
+ Prototype of yelp application using react node graphql and mongodb
  
  Steps to run the application
  
