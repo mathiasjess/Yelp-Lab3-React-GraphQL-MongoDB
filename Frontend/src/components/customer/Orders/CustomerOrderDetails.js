@@ -1,15 +1,16 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 import '../../restaurantOwner/UpdateRestaurantProfile.css'
-import { connect } from 'react-redux'
 import Moment from 'react-moment';
-import { imagepath } from '../../../config/imagepath';
 
 class CustomerOrderDetails extends React.Component {
     constructor(props) {
         super(props)
     }
+    
     render() {
+        let getorder = this.props.location.state.orderDetails
+        console.log("Order details", getorder)
         return (
             <div class="biz-site-expanded-grid-content-column">
                 <div class="biz-info-section">
@@ -19,11 +20,8 @@ class CustomerOrderDetails extends React.Component {
                         <Link to ='/customerorderhistory'><span class="glyphicon glyphicon-arrow-left"/>Return to Main Orders Page</Link>
                         </div>    
                         <h2> Orders</h2>
-                            {this.props.orderhistory.ordersummary && this.props.orderhistory.ordersummary.map((getorder,i)=>{
-                                if(getorder.orderID === this.props.match.params.id){
-                                   return <div class="card-order" key={i}>
-                                    <img src={imagepath+`${getorder.restaurantImage}`} alt="Avatar" class="photo-box-img" />
-                                            <h5>{getorder.restaurantName}</h5>
+                                   return <div class="card-order">
+                                            <h5>Order Details</h5>
                                         <div class="order-footer">
                                             <p><b>Date: </b><Moment>{getorder.Date}</Moment> </p>
                                             <p><b>Total Price:</b> ${getorder.totalPrice}</p>
@@ -46,8 +44,6 @@ class CustomerOrderDetails extends React.Component {
                                             <p><b>Order Type:</b> {getorder.deliveryFilter}</p>
                                         </div>
                                     </div>
-                                }
-                            })}
 
                         </div>
                     </div>
@@ -57,9 +53,5 @@ class CustomerOrderDetails extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
-    user: state.customerReducer,
-    orderhistory: state.customerOtherDetailsReducer
-});
 
-export default connect(mapStateToProps)(CustomerOrderDetails);
+export default CustomerOrderDetails;

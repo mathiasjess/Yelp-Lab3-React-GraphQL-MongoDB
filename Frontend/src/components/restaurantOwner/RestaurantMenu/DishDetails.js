@@ -2,7 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux';
 import '../RestaurantHomePage.css';
 import { Link } from 'react-router-dom'
-import { imagepath } from '../../../config/imagepath';
 import { graphql } from 'react-apollo';
 import { restaurantDetails } from '../../../queries/restaurantQueries/restaurantHomePageQueries'
 

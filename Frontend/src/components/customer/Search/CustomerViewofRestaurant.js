@@ -1,14 +1,10 @@
 import React from 'react'
-import axios from 'axios'
 import './customerviewofrestaurant.css'
-import { connect } from 'react-redux'
 import default_pic from '../../../images/restaurantprofileImage.png'
 import default_customer_pic from '../../../images/customer_default_pic.png'
 import Moment from 'react-moment';
 import 'moment-timezone';
 import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
-import { imagepath } from '../../../config/imagepath';
-import { rooturl } from '../../../config/settings';
 import { graphql} from 'react-apollo';
 import { restaurantDetails } from '../../../queries/restaurantQueries/restaurantHomePageQueries'
 
@@ -43,6 +39,7 @@ class CustomerViewofRestaurant extends React.Component {
             return (<div>Loading......</div>)
         }
         else {
+            localStorage.setItem('restaurantId',data.restaurantDetails[0]._id)
             return data.restaurantDetails.map(restaurant => {
                 return (
                     <div class="table-restaurant-view">
@@ -152,7 +149,7 @@ export default GoogleApiWrapper({
     options: () => {
         return {
             variables: {
-                _id: this.props.match.params.id
+                _id: localStorage.getItem('restaurantId')
             }
         }
     }

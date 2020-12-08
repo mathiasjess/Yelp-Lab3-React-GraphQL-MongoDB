@@ -1,10 +1,7 @@
 import React from 'react'
 import '../../restaurantOwner/RestaurantHomePage.css'
-import {connect} from 'react-redux'
-import axios from 'axios'
-import {restaurantReviewAdd} from '../../../actions/restaurantAction'
-import {customerReviews} from '../../../actions/customerOtherDetailsAction'
-import { rooturl } from '../../../config/settings';
+import { graphql} from 'react-apollo';
+import { writeReviews} from '../../../mutations/customerMutation/writeReviewMutation'
 
 class WriteReview extends React.Component{
     constructor(props){
@@ -27,37 +24,29 @@ class WriteReview extends React.Component{
     }
     addReview(event){
         event.preventDefault();
-        const sendrestaurantdata = {
-            customerID : this.props.user._id,
-            restaurantID : this.props.restaurant._id,
-            customerName : this.props.user.firstName + ' '+ this.props.user.lastName,
-            customerImage : this.props.user.profileImage,
-            reviewDate : new Date(),
+        this.props.writeReviews({
+            variables : {
+            customerID : localStorage.getItem('id'),
+            restaurantId : localStorage.getItem('restaurantId'),
+            customerName : localStorage.getItem('name'),
             ratings: this.state.ratings,
             comments : this.state.comments
-        }
-        const customerdata = {
-            restaurantID : this.props.restaurant._id,
-            restaurantName : this.props.restaurant.restaurantName,
-            customerImage : this.props.user.profileImage,
-            reviewDate : new Date(),
-            ratings: this.state.ratings,
-            comments : this.state.comments
-        }
-        axios.defaults.headers.common['authorization'] = localStorage.getItem('token')
-        axios.post(rooturl+`/customerreviewroute/writereview`,sendrestaurantdata)
-        .then((response)=>{
-            if(response.data.data.message === "success"){
-                this.props.restaurantReviewAdd(sendrestaurantdata)
-                this.props.customerReviews(customerdata)
-
-                alert("Review added")
-                    this.props.history.push(`/customerviewofrestaurant/${this.props.match.params.id}`)
-
             }
-            else if(response.data.data.message === "error"){
-                alert("You have already written a review for this restaurant. Please edit the existing review")
+        }).then(response =>{
+            console.log("Response status", response.data.writeReviews)
+            console.log("Response status", response.data.writeReviews.message)
+            console.log("Response status", response.data.writeReviews.status)
+            if(response.data.writeReviews.status === "200")
+            {   
+                alert(response.data.writeReviews.message)
+                this.props.history.push(`/customerviewofrestaurant/${localStorage.getItem('restaurantId')}`)
+                // window.location.reload()
             }
+            else{
+                alert(response.data.writeReviews.message)
+                this.props.history.push(`/customerviewofrestaurant/${localStorage.getItem('restaurantId')}`)
+            }
+            
         })
     }
     render(){
@@ -91,18 +80,5 @@ class WriteReview extends React.Component{
     }
 }
 
-const mapStateToProps = state => ({
-    user: state.customerReducer,
-    restaurant : state.restaurantReducer
-});
 
-function mapDispatchToProps(dispatch) {
-    return {
-        restaurantReviewAdd: (data) => dispatch(restaurantReviewAdd(data)),
-        customerReviews : (data) => dispatch(customerReviews(data))
-
-    }
-}
-
-
-export default connect(mapStateToProps,mapDispatchToProps)(WriteReview);
+export default graphql(writeReviews, { name: "writeReviews" })(WriteReview);

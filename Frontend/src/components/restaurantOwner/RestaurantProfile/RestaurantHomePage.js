@@ -7,7 +7,6 @@ import UpdateRestaurantProfile from './UpdateRestaurantProfile'
 import { connect } from 'react-redux';
 import Orders from '../Orders/Orders'
 import Menu from '../RestaurantMenu/AddMenu'
-import Events from '../Events/Events'
 
 
 class RestaurantHomePage extends React.Component {
@@ -66,17 +65,6 @@ class RestaurantHomePage extends React.Component {
         })
     }
 
-    handleEvents() {
-        this.setState({
-            homePageFlag: false,
-            updateProfileFlag: false,
-            addMenuFlag: false,
-            ordersFlag: false,
-            eventsFlag: true
-        })
-
-    }
-
     componentDidMount() {
         this.setState({
             homePageFlag: true,
@@ -112,9 +100,6 @@ class RestaurantHomePage extends React.Component {
                             <li class="nav-item">
                                 <Link to='/viewcustomerreviews' class="nav-link disabled" >Reviews</Link>
                             </li>
-                            <li class="nav-item">
-                                <Link to='#' class="nav-link disabled" onClick={this.handleEvents}> Add Events</Link>
-                            </li>
                         </ul>
 
                     </div>
@@ -125,7 +110,6 @@ class RestaurantHomePage extends React.Component {
                     {this.state.updateProfileFlag && <UpdateRestaurantProfile />}
                     {this.state.addMenuFlag && <Menu />}
                     {this.state.ordersFlag && <Orders />}
-                    {this.state.eventsFlag && <Events />}
                 </div>
             </div>
         )

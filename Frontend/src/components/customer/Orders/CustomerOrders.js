@@ -65,18 +65,26 @@ class CustomerOrders extends React.Component {
             takeOutValue : event.target.value
         }) 
     }
-    completeOrder(restaurantId) {
+    async completeOrder(restaurantId) {
         console.log("Take Out value", this.state.takeOutValue)
+        console.log("order details",this.props.cartItems.addedItems )
+        let cartitems = []
+        await this.props.cartItems.addedItems.map(item=>{
+            cartitems.push(item.dishName)
+            cartitems.push(item.quantity)
+            cartitems.push(item.price)
+        })
+        console.log("Cart Items", cartitems.toString())
         this.props.placeOrder({
             variables : {
                 customerID: localStorage.getItem('id'),
-                customerName : this.props.user.firstName + ' ' + this.props.user.lastName,
+                customerName : localStorage.getItem('name'),
                 restaurantId: this.props.match.params.id,
-                totalPrice: this.props.cartItems.total,
+                totalPrice: this.props.cartItems.total.toString(),
                 deliveryOption: this.state.takeOutValue,
                 delivery_status: 'Order Recieved',
                 deliveryFilter: 'New Order',
-                orderDetails : this.props.cartItems.addedItems
+                orderDetails : cartitems.toString()
             }
 
         }).then(response =>{
@@ -99,17 +107,18 @@ class CustomerOrders extends React.Component {
         })
     }
     receivedData() {
-        var data = this.props.restaurantDetails;
+        var data = this.props.data;
         if (data.loading) {
             return (<div>Loading......</div>)
         }
         else {
-            data.restaurantDetails.map(menu => {
-               <div class="card1">
+            console.log("Orders Page", data.restaurantDetails[0].menuItem)
+            return data.restaurantDetails[0].menuItem.map(menu => {
+               return <div class="card1">
                     <div class="container-order-menu">
                         <p style={{textAlign:'left'}}><b> Dish Name: </b>{menu.dishName}</p>
                         <p style={{textAlign:'left'}}><b>Price: </b>{menu.price}</p>
-                        <button class="btn btn-primary" value={menu._id} onClick={() => this.handleAddToCart(menu._id, menu.dishName, menu.price)}>Add to Cart</button>
+                        <button class="btn btn-primary" value={menu._id} onClick={() => this.handleAddToCart(menu._id, menu.dishName, parseFloat(menu.price))}>Add to Cart</button>
                     </div>
                 </div>
              })
@@ -216,10 +225,21 @@ export default connect(mapStateToProps, mapDispatchToProps)(compose(
         options: () => {
             return {
                 variables: {
-                    _id: this.props.match.params.id
+                    _id: localStorage.getItem('restaurantId')
                 }
             }
         }
     }),
     graphql(placeOrder, { name: "placeOrder" })
 )(CustomerOrders));
+
+// export default connect(mapStateToProps, mapDispatchToProps)
+//     (graphql(restaurantDetails,{
+//         options: () => {
+//             return {
+//                 variables: {
+//                     _id: localStorage.getItem('restaurantId')
+//                 }
+//             }
+//         }
+//     })(CustomerOrders));

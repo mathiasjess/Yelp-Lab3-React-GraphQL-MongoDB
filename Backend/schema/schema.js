@@ -282,6 +282,7 @@ const Mutation = new GraphQLObjectType({
                 orderDetails: { type: GraphQLString },
             },
             async resolve(parent, args) {
+                console.log("Order details",args.orderDetails)
                 return await placeOrder(args)
             }
         },

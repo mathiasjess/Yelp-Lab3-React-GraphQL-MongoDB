@@ -2,15 +2,31 @@ var restaurant = require('../../models/RestaurantOwnerModel')
 
 const placeOrder = async (args) => {
     let returnStatus = null
+    let outputOrder = []
+    let orderDetails = {}
+    let j = 0
+    var arr = args.orderDetails.split(','); 
+
+    for (var i = 0 ; i< arr.length; i += 3 ){
+        orderDetails.dishName = arr[i]
+        orderDetails.quantity = parseInt(arr[i+1])
+        orderDetails.price =  parseFloat(arr[i+2])
+
+        outputOrder[j] = orderDetails
+        orderDetails = {}
+        j = j+1
+        console.log("Output order", outputOrder)
+    }
+    console.log("After converting orders", outputOrder)
+
     let ordersObject = {
         customerID: args.customerID,
         customerName: args.customerName,
         customerImage: args.customerImage,
         totalPrice: args.totalPrice,
-        deliveryOption: args.deliveryOption,
         delivery_status: args.delivery_status,
         deliveryFilter: args.deliveryFilter,
-        orderDetails: args.orderDetails
+        orderDetails: outputOrder
     }
     console.log("Add dish", ordersObject)
     await restaurant.updateOne(

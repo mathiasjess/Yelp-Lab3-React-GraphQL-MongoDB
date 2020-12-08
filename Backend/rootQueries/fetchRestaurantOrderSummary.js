@@ -8,10 +8,10 @@ const fetchRestaurantOrderSummary = async (args) => {
             console.log("No data found")
         }
         else {
-            returnObject = result.orders
+            returnObject = result
         }
     })  
-    console.log("Restaurant return", returnObject)
+    console.log("Restaurant return", JSON.stringify(returnObject))
     return returnObject
 }
 

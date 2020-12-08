@@ -3,6 +3,7 @@ import { gql } from 'apollo-boost';
 const restaurantDetails = gql`
 query($_id : String){
         restaurantDetails(_id: $_id){
+            _id
             restaurantName
             email
             location

@@ -6,6 +6,7 @@ import default_image from '../../../images/customer_default_pic.png'
 import restaurant_image from '../../../images/restaurantprofileImage.png'
 import { connect } from 'react-redux';
 import Moment from 'react-moment';
+import moment from 'moment'
 import 'moment-timezone';
 import { customerReviews } from '../../../actions/customerOtherDetailsAction'
 import { graphql} from 'react-apollo';
@@ -27,7 +28,7 @@ class ReviewsOnProfile extends React.Component{
                         <img class="photo-box-rest" src={restaurant_image} alt="Avatar" />
                         <h5 style={{ paddingTop: '1rem'}}>  {item.restaurantName}</h5>
                     </div>
-                    <p style={{ paddingTop: '2rem' }}><b>Date: </b><Moment>{new Date(item.reviews[0].reviewDate)}</Moment></p>
+                    <p style={{ paddingTop: '2rem' }}><b>Date: </b>{moment(parseInt(item.reviews[0].reviewDate)).format("DD-MM-YYYY h:mm:ss")}</p>
                     <p><b>Comments: </b>{item.reviews[0].comments}</p>
                 </div>
             })

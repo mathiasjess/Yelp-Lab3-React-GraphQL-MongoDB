@@ -10,7 +10,7 @@ import 'moment-timezone';
 import { customerReviews } from '../../../actions/customerOtherDetailsAction'
 import { customerLogin } from '../../../actions/customerAction'
 import { userfollowers } from '../../../actions/customerAction'
-import ReviewsOnProfile from './ReviewsOnProfile'
+// import ReviewsOnProfile from './ReviewsOnProfile'
 import { graphql} from 'react-apollo';
 import { customerDetails } from '../../../queries/customerQueries/customerHomePageQueries'
 
@@ -22,14 +22,9 @@ class ProfileDetails extends React.Component {
             reviews: [],
         }
         this.handleOrderPage = this.handleOrderPage.bind(this)
-        this.handleEventsPage = this.handleEventsPage.bind(this)
     }
     handleOrderPage(custID) {
         this.props.history.push('/customerorderhistory')
-    }
-
-    handleEventsPage(custID) {
-        this.props.history.push(`/customerevents/${custID}`)
     }
     displayCustomerDetails() {
         var data = this.props.data;
@@ -72,11 +67,7 @@ class ProfileDetails extends React.Component {
                                     {/* <span  class="nav-link" >Update  Restaurant Profile</span>*/}
                                 </li>
                                 <li class="nav-item">
-                                    <button class="profileLinks" onClick={() => this.handleEventsPage(localStorage.getItem('id'))}> Registered Events</button>
-                                    {/* <span  class="nav-link" >Update  Restaurant Profile</span>*/}
-                                </li>
-                                <li class="nav-item">
-                                    <Link to='/viewcustomerreviews' class="nav-link disabled" >Reviews</Link>
+                                    <Link to='/viewreviews' class="nav-link disabled" >Reviews</Link>
                                 </li>
                                 <li class="nav-item">
                                     <Link to='#' class="nav-link" onClick={this.handleAddMenu}>Friends</Link>
@@ -104,7 +95,7 @@ class ProfileDetails extends React.Component {
                     </div>
                     <div class="td-2">
                         <h2>Reviews</h2>
-                        <ReviewsOnProfile />
+                        {/*<ReviewsOnProfile />*/}
                     </div>
                     <div class="td-3">
                         <h2> About Me</h2>

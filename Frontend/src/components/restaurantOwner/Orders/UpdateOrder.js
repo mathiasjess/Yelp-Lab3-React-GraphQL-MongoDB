@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 import '../UpdateRestaurantProfile.css'
 import { connect } from 'react-redux'
 import Moment from 'react-moment';
-import { imagepath } from '../../../config/imagepath';
-import { rooturl } from '../../../config/settings';
 import {updateOrderStatus} from '../../../mutations/restaurantMutations/updateOrderMutation'
 import { graphql } from 'react-apollo';
 

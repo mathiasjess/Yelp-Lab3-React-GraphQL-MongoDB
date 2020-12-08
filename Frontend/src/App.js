@@ -12,7 +12,6 @@ import { Provider } from 'react-redux';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo'
 import allYelpReducers from './reducer/index'
-import { rooturl } from '../src/config/settings';
 
 const store = createStore(allYelpReducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
 

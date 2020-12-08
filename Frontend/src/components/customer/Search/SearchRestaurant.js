@@ -27,9 +27,9 @@ class SearchRestaurant extends React.Component {
             staticResults: [],
             handleFilterFlag : true
         }
-        this.goToRestaurant = this.goToRestaurant.bind(this)
-        this.Filter = this.Filter.bind(this)
-        this.displayMarkers = this.displayMarkers.bind(this)
+        // this.goToRestaurant = this.goToRestaurant.bind(this)
+        // this.Filter = this.Filter.bind(this)
+        // this.displayMarkers = this.displayMarkers.bind(this)
     }
 
     displaySearchResults(){
@@ -38,10 +38,11 @@ class SearchRestaurant extends React.Component {
             return (<div>Loading......</div>)
         }
         else {
+            localStorage.setItem('restaurantId',data.searchRestaurant[0]._id )
             return data.searchRestaurant.map(result => {
             return <div class="card">
             <div class="search-res-header">
-             <img class="card-img-top-search" src={default_pic} alt="Card image cap" />}
+             <img class="card-img-top-search" src={default_pic} alt="Card image cap" />
                 <h4 style={{ paddingTop: '45px' }}>{result.restaurantName}</h4>
             </div>
             <div class="card-body">
@@ -63,10 +64,11 @@ class SearchRestaurant extends React.Component {
     }
 
     displayFilteredSearchResults(){
+        localStorage.setItem('restaurantId',this.state.searchResults[0]._id )
             return this.state.searchResults.map(result => {
             return <div class="card">
             <div class="search-res-header">
-                <img class="card-img-top-search" src={default_pic} alt="Card image cap" />}
+                <img class="card-img-top-search" src={default_pic} alt="Card image cap" />
                 <h4 style={{ paddingTop: '45px' }}>{result.restaurantName}</h4>
             </div>
             <div class="card-body">
@@ -132,15 +134,15 @@ class SearchRestaurant extends React.Component {
         });
 
     }
-    displayMarkers = () => {
-        return this.props.data.searchRestaurant.map((store, index) => {
-            return <Marker key={index} id={index} position={{
-                lat: store.latitude,
-                lng: store.longitude
-            }}
-                onClick={() => console.log("You clicked me!")} />
-        })
-    }
+    // displayMarkers = () => {
+    //     return this.props.data.searchRestaurant.map((store, index) => {
+    //         return <Marker key={index} id={index} position={{
+    //             lat: store.latitude,
+    //             lng: store.longitude
+    //         }}
+    //             onClick={() => console.log("You clicked me!")} />
+    //     })
+    // }
     render() {
         const mapStyles = {
             width: '45rem',
@@ -203,14 +205,14 @@ class SearchRestaurant extends React.Component {
                         {this.state.handleFilterFlag ? this.displaySearchResults() : this.displayFilteredSearchResults()}
                     </div>
                     <div class="td-maps">
-                        <Map
+                        {/*<Map
                             google={this.props.google}
                             zoom={8}
                             style={mapStyles}
                             initialCenter={{ lat: 37.40377490, lng: -121.87985110 }}
                         >
-                            {this.displayMarkers()}
-                        </Map>
+                        {this.displayMarkers()}
+                        </Map>*/}
                     </div>
                 </div>
             </div>
@@ -225,8 +227,11 @@ export default withRouter(graphql(searchRestaurant, {
     options: () => {
         return {
             variables: {
-                searchParameter: this.props.location.aboutProps.searchParameter1
+                searchParameter: localStorage.getItem('searchParameter')
             }
         }
     }
 })(SearchRestaurant));
+
+
+// export default SearchRestaurant;

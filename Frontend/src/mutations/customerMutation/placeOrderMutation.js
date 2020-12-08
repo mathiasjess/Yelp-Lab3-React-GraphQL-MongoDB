@@ -8,5 +8,4 @@ const placeOrder = gql`
                 }
             }
         `;
-
 export {placeOrder}

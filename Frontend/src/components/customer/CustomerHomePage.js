@@ -27,7 +27,9 @@ class CustomerHomePage extends React.Component {
     captureSearchParameters(event){
         event.preventDefault();
         this.setState({
-            [event.target.name] : event.target.value
+           searchParameter1: event.target.value
+        },()=>{
+            localStorage.setItem('searchParameter',this.state.searchParameter1 )
         })
     }
 
@@ -75,4 +77,4 @@ const mapStateToProps = state => ({
 });
 
 
-export default connect(mapStateToProps)(CustomerHomePage);
+export default connect(mapStateToProps)(CustomerHomePage); 
