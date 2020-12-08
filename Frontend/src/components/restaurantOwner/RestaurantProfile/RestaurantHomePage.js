@@ -24,7 +24,6 @@ class RestaurantHomePage extends React.Component {
         this.handleUpdateRestaurantProfile = this.handleUpdateRestaurantProfile.bind(this)
         this.handleAddMenu = this.handleAddMenu.bind(this)
         this.handleOrders = this.handleOrders.bind(this)
-        this.handleEvents = this.handleEvents.bind(this)
 
     }
     handleMainProfile() {

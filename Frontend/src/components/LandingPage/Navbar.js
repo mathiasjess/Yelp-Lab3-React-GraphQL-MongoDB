@@ -3,10 +3,6 @@ import { Link } from 'react-router-dom';
 import Home from '../Home/Home';
 import '../../App.css';
 import yelp_logo from '../../images/yelp_icon.png'
-// import { connect } from 'react-redux';
-// import { restaurantProfileLogout } from '../../actions/restaurantAction'
-// import { customerProfileLogout } from '../../actions/customerAction'
-//create the Navbar Component
 class Navbar extends Component {
     constructor(props) {
         super();
@@ -14,49 +10,7 @@ class Navbar extends Component {
             displayHome: true,
             customeractionsFlag: false
         }
-        this.handleRestaurantLogout = this.handleRestaurantLogout.bind(this);
-        this.handleCustomerLogout = this.handleCustomerLogout.bind(this);
         this.handleHome = this.handleHome.bind(this);
-    }
-    //handle logout to destroy the cookie
-    handleRestaurantLogout = () => {
-        // localStorage.removeItem('id')
-        // localStorage.removeItem('email')
-        // localStorage.removeItem('role')
-        // localStorage.removeItem('token')
-        // const data = {
-        //     restaurantId: '',
-        //     restaurantName: '',
-        //     email: '',
-        //     password: '',
-        //     description: '',
-        //     contact: '',
-        //     location: '',
-        //     city: '',
-        //     state: '',
-        //     country: '',
-        //     zipcode: '',
-        //     restaurantImage: '',
-        //     timings: '',
-        //     curbPickup: false,
-        //     dineIn: false,
-        //     yelpDelivery: false
-        // }
-        // this.props.restaurantProfileLogout(data)
-        // this.setState({
-        //     customeractionsFlag: false
-        // })
-    }
-    handleCustomerLogout=()=>{
-        // localStorage.removeItem('id')
-        // localStorage.removeItem('email')
-        // localStorage.removeItem('role')
-        // localStorage.removeItem('token')
-        // this.props.customerProfileLogout()
-        // this.setState({
-        //     customeractionsFlag: false
-        // })
-
     }
     handleHome() {
         this.setState({
@@ -78,7 +32,7 @@ class Navbar extends Component {
             console.log("Able to read local session storage details");
             navLogin = (
                 <ul class="nav navbar-nav navbar-right">
-                    <li><Link to="/home" onClick={this.handleRestaurantLogout}><span class="glyphicon glyphicon-user"></span>Logout</Link></li>
+                    <li><Link to="/home" onClick={()=>{localStorage.clear()}}><span class="glyphicon glyphicon-user"></span>Logout</Link></li>
                 </ul>
             );
         } else {
@@ -99,9 +53,6 @@ class Navbar extends Component {
                 customerFeatures = (
                     <ul class="nav navbar-nav">
                         <button class="customerFeatures" onClick={() => this.props.history.push(`/customerhomepage/${localStorage.getItem('id')}`)}>Home</button>
-                        <button class="customerFeatures" onClick={() => this.props.history.push("/gotoconversations")}>Messages</button>
-                        <button class="customerFeatures" onClick={() => this.props.history.push(`/mainevents`)}>Events</button>
-                        <button class="customerFeatures" onClick={() => this.props.history.push(`/allusers`)}>Users</button>
                     </ul>
                 )
             }
@@ -109,9 +60,7 @@ class Navbar extends Component {
                 customerFeatures = (
                     <ul class="nav navbar-nav">
                         <button class="customerFeatures" onClick={() => this.props.history.push(`/restauranthomepage/${localStorage.getItem('id')}`)}>Home</button>
-                        <button class="customerFeatures" onClick={() => this.props.history.push("/gotoconversations")}>Messages</button>
                         <button class="customerFeatures" onClick={() => this.props.history.push("/displaymenu")}>Menu</button>
-                        <button class="customerFeatures" onClick={() => this.props.history.push("/displayevents")}>Events</button>
                         <button class="customerFeatures" onClick={() => this.props.history.push("/orders")}>Orders</button>
                         <button class="customerFeatures" onClick={() => this.props.history.push('/viewcustomerreviews')}>Reviews</button>
                     </ul>
@@ -136,12 +85,4 @@ class Navbar extends Component {
         )
     }
 }
-
-// function mapDispatchToProps(dispatch) {
-//     return {
-//         restaurantProfileLogout: (data) => dispatch(restaurantProfileLogout(data)),
-//         customerProfileLogout :() => dispatch(customerProfileLogout()),
-//     }
-// }
-// export default connect(null, mapDispatchToProps)(Navbar);
 export default Navbar;

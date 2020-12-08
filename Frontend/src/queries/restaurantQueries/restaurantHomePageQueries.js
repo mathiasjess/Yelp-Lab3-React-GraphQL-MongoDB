@@ -37,6 +37,7 @@ query($_id : String){
                 deliveryOption
                 delivery_status
                 deliveryFilter
+                orderDate
                 orderDetails{
                     dishName
                     price

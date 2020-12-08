@@ -35,30 +35,6 @@ const restaurantOwnerType = new GraphQLObjectType({
         events: { type: new GraphQLList(eventsType)},
         reviews: {type: new GraphQLList(reviewsType)},
         orders: {type: new GraphQLList(ordersType)}
-        // menuItem: {
-        //     type: new GraphQLList(menuType),
-        //     resolve(parent, args) {
-        //         return parent.menuItem
-        //     }
-        // },
-        // events: {
-        //     type: new GraphQLList(eventsType),
-        //     resolve(parent, args) {
-        //         return parent.events
-        //     }
-        // },
-        // reviews: {
-        //     type: new GraphQLList(reviewsType),
-        //     resolve(parent, args) {
-        //         return parent.reviews
-        //     }
-        // },
-        // orders: {
-        //     type: new GraphQLList(ordersType),
-        //     resolve(parent, args) {
-        //         return parent.orders
-        //     }
-        // }
     })
 })
 

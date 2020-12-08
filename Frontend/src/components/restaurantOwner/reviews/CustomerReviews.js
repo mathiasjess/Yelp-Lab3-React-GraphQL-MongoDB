@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import './reviews.css'
 import default_image from '../../../images/customer_default_pic.png'
 import '../Paginate.css'
-import Moment from 'react-moment';
+import moment from 'moment'
 import { graphql} from 'react-apollo';
 import { restaurantDetails } from '../../../queries/restaurantQueries/restaurantHomePageQueries'
 
@@ -28,7 +28,7 @@ class CustomerReviews extends React.Component {
                         aboutProps: { id: review.customerID }
                     }}><h5>{review.customerName}</h5></Link>
                 </div>
-                <h6>Date: <Moment>{Date(review.reviewDate)}</Moment></h6>
+                <h6>Date: {moment(parseInt(review.reviewDate)).format("DD-MM-YYYY h:mm:ss")}</h6>
                 <h6>Comments:{review.comments}</h6>
             </div>})
         }

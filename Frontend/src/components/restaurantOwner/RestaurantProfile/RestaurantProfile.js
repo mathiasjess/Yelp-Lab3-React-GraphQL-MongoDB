@@ -7,7 +7,7 @@ import {restaurantLogin} from '../../../actions/restaurantAction'
 import { connect } from 'react-redux';
 import { Route, Link, withRouter } from 'react-router-dom';
 import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
-import Moment from 'react-moment';
+import moment from 'moment';
 import { graphql} from 'react-apollo';
 import { restaurantDetails } from '../../../queries/restaurantQueries/restaurantHomePageQueries'
 
@@ -81,7 +81,7 @@ class RestaurantProfile extends React.Component {
                                                 aboutProps: { id: review.customerID }
                                             }}><h5>{review.customerName}</h5></Link>
                                         </div>
-                                        <h6>Date: <Moment>{review.reviewDate}</Moment></h6>
+                                        <h6>Date: {moment(parseInt(review.reviewDate)).format("DD-MM-YYYY h:mm:ss")}</h6>
                                         <h6>Comments:{review.comments}</h6>
                                     </div>
                                 })}

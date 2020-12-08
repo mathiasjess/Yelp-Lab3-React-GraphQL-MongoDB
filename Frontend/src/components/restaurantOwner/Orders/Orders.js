@@ -1,9 +1,8 @@
 import React from 'react'
 import { Link, withRouter } from 'react-router-dom';
 import '../Orders/orderhistory.css'
-import Moment from 'react-moment';
+import moment from 'moment'
 import default_image from '../../../images/customer_default_pic.png'
-import ReactPaginate from 'react-paginate';
 import '../Paginate.css'
 import { graphql } from 'react-apollo';
 import { restaurantDetails } from '../../../queries/restaurantQueries/restaurantHomePageQueries'
@@ -54,7 +53,7 @@ class RestaurantOrderHistory extends React.Component {
                                 <h5>{summary.customerName}</h5></Link>
                         </div>
                         <div class="order-footer">
-                            <p><b>Date:</b> <Moment>{summary.Date}</Moment></p>
+                            <p><b>Date:</b>{moment(parseInt(summary.orderDate)).format("DD-MM-YYYY h:mm:ss")}</p>
                             <p><b>Total Price:</b> {summary.totalPrice}</p>
                         </div>
                         <div class="order-footer">
@@ -66,7 +65,7 @@ class RestaurantOrderHistory extends React.Component {
                     </div>
                 </div>
             })
-        }
+        }  
     }
 
     receivedFilteredData(){
@@ -85,7 +84,7 @@ class RestaurantOrderHistory extends React.Component {
                             <h5>{summary.customerName}</h5></Link>
                     </div>
                     <div class="order-footer">
-                        <p><b>Date:</b> <Moment>{summary.Date}</Moment></p>
+                        <p><b>Date:</b> {moment(parseInt(summary.orderDate)).format("DD-MM-YYYY h:mm:ss")}</p>
                         <p><b>Total Price:</b> {summary.totalPrice}</p>
                     </div>
                     <div class="order-footer">

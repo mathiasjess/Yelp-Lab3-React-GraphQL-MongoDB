@@ -5,7 +5,7 @@ import './ProfileDetails.css'
 import default_image from '../../../images/customer_default_pic.png'
 import restaurant_image from '../../../images/restaurantprofileImage.png'
 import { connect } from 'react-redux';
-import Moment from 'react-moment';
+import moment from 'moment'
 import 'moment-timezone';
 import { customerReviews } from '../../../actions/customerOtherDetailsAction'
 import { customerLogin } from '../../../actions/customerAction'
@@ -102,9 +102,9 @@ class ProfileDetails extends React.Component {
                         <p class="details-heading">Location</p>
                         <p class="details-info">{customer.location}{customer.city}, {customer.state} {customer.country}, {customer.zipcode}</p>
                         <p class="details-heading">Date of Birth</p>
-                        <p class="details-info"><Moment>{customer.DOB}</Moment></p>
+                        <p class="details-info">{moment(parseInt(customer.DOB)).format("DD-MM-YYYY h:mm:ss")}</p>
                         <p class="details-heading">Yelping Since</p>
-                        <p class="details-info"><Moment>{customer.yelpingSince}</Moment></p>
+                        <p class="details-info">{moment(parseInt(customer.yelpingSince)).format("DD-MM-YYYY h:mm:ss")}</p>
                         <p class="details-heading">Things I Love</p>
                         <p class="details-info">{this.state.thingsILove}</p>
                         <p class="details-heading">Find me In</p>

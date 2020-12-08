@@ -88,7 +88,8 @@ class UpdateRestaurantProfile extends React.Component {
         })
 
     }
-    updateallprofileData() {
+    updateallprofileData(event) {
+        event.preventDefault();
         const data = {
             restaurantName: this.state.restaurantName,
             email: this.state.email,
@@ -104,7 +105,7 @@ class UpdateRestaurantProfile extends React.Component {
             dineIn: this.state.delivery.dineIn,
             yelpDelivery: this.state.delivery.yelpDelivery,
         }
-        console.log("After update", data)
+        alert("Updated Restaurant Profile successfully")
         this.props.restaurantProfileUpdate(data)
 
     }

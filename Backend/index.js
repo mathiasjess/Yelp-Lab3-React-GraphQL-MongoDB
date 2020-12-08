@@ -12,19 +12,15 @@ const mongoose = require('mongoose')
 
 
 const { graphqlHTTP } = require('express-graphql');
+const { GraphQLSchema } = require('graphql');
 const schema = require('./schema/schema')
 
 
 const server = require("http").createServer(app);
-const io = require('socket.io')(server)
-const Chat = require('./models/ChatModel')
 const PORT = process.env.PORT || 3001
-
-
 
 //use cors to allow cross origin resource sharing
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
-
 
 // Passport middleware
 const passport = require('passport');
@@ -46,6 +42,12 @@ app.use(express.static(path.join(__dirname + 'public')));
 //   }));
 app.use(bodyParser.json());
 
+app.use('/graphql', graphqlHTTP({
+    schema,
+    graphiql : true
+}));
+
+
 
 //Allow Access Control
 app.use(function (req, res, next) {
@@ -65,73 +67,6 @@ var options = {
     bufferMaxEntries: 0
 }
 
-app.use('/graphql', graphqlHTTP({
-    schema,
-    graphiql : true
-}));
-
-// Sending and recieving messages using socket.io
-
-// io.on("connection", socket => {
-//     socket.on("Input Chat Message", msg => {
-//         let chat = new Chat({
-//             customerId: msg.customerId,
-//             sender: msg.sender,
-//             restaurantId: msg.restaurantId,
-//             chatMessage: msg.chatMessage,
-//             nowtime: msg.nowtime,
-//             sendertype : msg.sendertype
-//         })
-//         console.log("Chat details", chat)
-//         chat.save((err, doc) => {
-//             if (err) return res.json({ success: false })
-//             Chat.find({ "_id": doc._id }, (err,result)=>{
-//                 if(err) return res.json({message: "Error"})
-//                 return io.emit("Output Chat Message", result)
-//             })
-//         })
-//     })
-// })
-
-// Fetching Routes of restaurant
-
-// var registerrestaurant = require('./routes/restaurant/restaurantRegistration');
-const { GraphQLSchema } = require('graphql');
-// var restaurantloginroute = require('./routes/restaurant/restaurantLogin')
-// let restaurantprofiledetailsroute = require('./routes/restaurant/restaurantProfile')
-// var restaurantmenuroute = require('./routes/restaurant/restaurantMenu')
-// var restauranteventsroute = require('./routes/restaurant/restaurantEvents')
-// var restaurantordersroute = require('./routes/restaurant/restaurantOrders')
-// var restaurantreviewsroute = require('./routes/restaurant/restaurantReviews')
-// var chatroutes = require('./routes/restaurant/ChatsRoute')
-
-// app.use('/registerrestaurant', registerrestaurant);
-// app.use('/restaurantloginroute', restaurantloginroute);
-// app.use('/restaurantprofiledetailsroute', restaurantprofiledetailsroute);
-// app.use('/restaurantmenuroute', restaurantmenuroute)
-// app.use('/restauranteventsroute', restauranteventsroute)
-// app.use('/restaurantordersroute', restaurantordersroute)
-// app.use('/restaurantreviewsroute', restaurantreviewsroute)
-// app.use('/chatroutes', chatroutes)
-
-// // Customer Routes
-// var customerregistrationroute = require('./routes/customer/customerRegistration');
-// var customerloginroute = require('./routes/customer/customerLogin')
-// var customerprofileroute = require('./routes/customer/customerProfile')
-// var customersearchroute = require('./routes/customer/searchRestaurant')
-// var customerreviewroute = require('./routes/customer/customerReview')
-// var customereventsroute = require('./routes/customer/events')
-// var customerordersroute = require('./routes/customer/customerOrders')
-// var allcustomersroute = require('./routes/customer/friends')
-
-// app.use('/customerregistrationroute', customerregistrationroute)
-// app.use('/customerloginroute', customerloginroute)
-// app.use('/customerprofileroute', customerprofileroute)
-// app.use('/customersearchroute', customersearchroute)
-// app.use('/customerreviewroute', customerreviewroute)
-// app.use('/customereventsroute', customereventsroute)
-// app.use('/customerordersroute', customerordersroute)
-// app.use('/allcustomersroute', allcustomersroute)
 
 server.listen(PORT);
 console.log("Server Listening on port 3001");
