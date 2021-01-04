@@ -1,6 +1,6 @@
 var restaurant = require('../../models/RestaurantOwnerModel')
 const googleMapsClient = require('@google/maps').createClient({
-    key: 'AIzaSyCiheh-O9omWKbtCfWf-S539GT82IK8aNQ'
+    key: ''
 });
 
 var bcrypt = require('bcryptjs');
